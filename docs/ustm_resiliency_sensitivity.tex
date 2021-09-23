@@ -1,0 +1,108 @@
+\documentclass[3p, authoryear]{elsarticle} %review=doublespace preprint=single 5p=2 column
+%%% Begin My package additions %%%%%%%%%%%%%%%%%%%
+\usepackage[hyphens]{url}
+
+  \journal{Submitted to Journal} % Sets Journal name
+
+
+\usepackage{lineno} % add
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+\usepackage{graphicx}
+%%%%%%%%%%%%%%%% end my additions to header
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \usepackage{fontspec}
+  \ifxetex
+    \usepackage{xltxtra,xunicode}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+\fi
+% use microtype if available
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\usepackage{natbib}
+\bibliographystyle{apalike}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={},
+            pdftitle={USTM Resiliency Sensitivity Analysis},
+            colorlinks=false,
+            urlcolor=blue,
+            linkcolor=magenta,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+
+\setcounter{secnumdepth}{5}
+% Pandoc toggle for numbering sections (defaults to be off)
+
+% Pandoc citation processing
+
+% Pandoc header
+\usepackage{booktabs}
+
+
+
+\begin{document}
+\begin{frontmatter}
+
+  \title{USTM Resiliency Sensitivity Analysis}
+    \author[Brigham Young University]{Gregory Macfarlane\corref{1}}
+   \ead{gregmacfarlane@byu.edu} 
+    \author[Brigham Young University]{Natalie Gray}
+   \ead{nat.gray2000@gmail.com} 
+      \address[Brigham Young University]{Civil and Environmental Engineering Department, 430 Engineering Building, Provo, Utah 84602}
+      \cortext[1]{Corresponding Author}
+  
+  \begin{abstract}
+  This is where the abstract should go.
+  \end{abstract}
+   \begin{keyword} Sensitivity Analysis Resiliency Latin Hypercube Sampling\end{keyword}
+ \end{frontmatter}
+
+\hypertarget{questions}{%
+\section{Questions}\label{questions}}
+
+Which includes research questions and hypotheses addressed in the article.
+
+\hypertarget{methods}{%
+\section{Methods}\label{methods}}
+
+Which describes the methods and data used in the article.
+
+\hypertarget{findings}{%
+\section{Findings}\label{findings}}
+
+Which describes the results of what you found.
+
+\bibliography{book.bib}
+
+
+\end{document}
