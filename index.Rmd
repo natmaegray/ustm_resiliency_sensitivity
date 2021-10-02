@@ -31,10 +31,41 @@ keywords:
   - Latin Hypercube Sampling
 ---
 
+```{r, include = FALSE}
+library(readxl)
+library(tidyverse)
+library(knitr)
+```
+
+
 # Questions
 
-There exists uncertainty in travel demand models. This is known by transportation planners but the majority do not use any particular method to quantify it. This uncertainty exists mostly due to the variance among input parameters. A coefficient of variation can be used to approximate the standard deviation of the inputs, which then provides a range of values that are possible for model input. [@zhao2002propagation]
+There exists uncertainty in travel demand models. This is known by transportation planners but the majority do not use any particular method to quantify it. This uncertainty exists mostly due to the variance among input parameters. A coefficient of variation can be used to approximate the standard deviation of the inputs, which then provides a range of values that are possible for model input [@zhao2002propagation]. A sampling method can then be used to determine the possible combinations of parameter variance. Two popular sampling methods are Monte Carlo simulation and Latin Hypercube sampling. Monte Carlo simulation is capable of providing full variance probability, but requires large computations to be effective on a large scale model [@yang2013sensitivity]. Latin Hypercube sampling reduces the amount variants needed, but the question arises on if the same result be achieved with fewer samples, and how many samples is that? 
+
+```{r, data, include=FALSE}
+MC_coeff <- read_csv("data/MC_coeff.csv")
+MC_constants <- read_csv("data/MC_constants.csv")
+DC_param <- read_csv("data/DC_parameters.csv") %>%
+  slice(-c(12,13,14,15,16,17,18,19,20,21))
+```
+
+The inputs for sampling that will be used are mode choice coefficients, mode choice constants, and destination choice parameters. These inputs are shown in Table \@ref(tab:MCcoeff), Table \@ref(tab:MCconst), and Table \@ref(tab:DCparam).
+
+```{r MCcoeff, echo = FALSE, results = 'axis'}
+kable(MC_coeff[,2:5], caption = "Mode Choice Coefficients")
+```
+
+```{r MCconst, echo = FALSE, results = 'axis'}
+kable(MC_constants[,2:5], caption = "Mode Choice Constants")
+```
+
+```{r DCparam, echo = FALSE, results = 'axis'}
+kable(DC_param[,2:5], caption = "Destination Choice Parameters")
+```
+
+A dummy model will be created for this analysis from <https://github.com/ActivitySim/activitysim>.
 
 The research questions are therefore:
 
   - How many iterations of Latin Hypercube Sampling in a travel demand model are necessary to approximate random sampling methods (e.g., Monte Carlo simulation)?
+  - Does this method of sampling have few enough iterations for statewide model application?
