@@ -3,9 +3,26 @@
 # 
 # 
 
-#' Summarize a mean value
-#' 
-#' @param dataset A data frame or tibble with an `x` variable.
-summ <- function(dataset) {
-  summarize(dataset, mean_x = mean(x))
+#read skims
+readskims <- function(path){
+  read_all_omx(path)
 }
+
+#read CSVs
+
+# read in SE DATA, read in trip rates, read in mc / dc utilities
+readCSV <- function(path){
+  read_csv(path)
+}
+
+
+# run trip gen
+
+
+# run mode choice logsum calculator
+
+
+# run destination choice calculator / compute destination choice
+
+
+# compute mode choice probability
