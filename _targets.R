@@ -8,7 +8,7 @@ library(targets)
 # and tar_read(summary) to view the results.
 
 # Set target-specific options such as packages.
-tar_option_set(packages = c("tidyverse", "bookdown", "omxr"))
+tar_option_set(packages = c("tidyverse", "bookdown", "omxr", "nhts2017"))
 
 # Define custom functions and other global objects.
 # This is where you write source(\"R/functions.R\")
@@ -22,13 +22,16 @@ data_targets <- list(
   tar_target(skims_file, "data/skims.omx", format = "file"),
   tar_target(skims, readskims(skims_file)),
   
-  # read in SE DATA
-  tar_target(se_file, "data/households.csv", format = "file"), #need right file input
-  tar_target(se_data, readCSV(se_file)),
-  
-  # read in trip rates
-  tar_target(triprates_file, "data/households.csv", format = "file"), #need right file input
-  tar_target(trip_rates, readCSV(triprates_file)),
+  # household DATA
+  tar_target(hh_file, "data/households.csv", format = "file"), 
+  tar_target(hh, readCSV(hh_file)),
+  tar_target(hh_clean, hh_data(hh)),
+
+  # trip rates
+  tar_target(nhts_hh, nhts_households),
+  tar_target(nhts_trip, nhts_trips),
+  tar_target(nhts_tripprod, nhts_2017(nhts_hh, nhts_trip)),
+  tar_target(trips, tripprod(hh_clean, nhts_tripprod)),
   
   # read in mc / dc utilities
   tar_target(mc_coeff_file, "data/MC_coeff.csv", format = "file"),
@@ -39,6 +42,7 @@ data_targets <- list(
   tar_target(dc_param, readCSV(dc_param_file))
   
   # run trip gen
+  
   
   # run mode choice logsum calculator
   
