@@ -75,12 +75,38 @@ tripprod <- function(households, nhts_tripprod){
 
 
 # run mode choice logsum calculator
-mc_logsum <- function(){
-  #  HBW_util = 
-  #  HBO_util = 
-  #  NHB_util = 
+mc_logsum <- function(mode, skims, mc_coeff, mc_const){
+
+  coeff_ivtt <- -0.045
+  coeff_cost <- -0.0016
+  auto_cost <- 18.3
+  k_nmot <- 1.7602
+  coeff_walk1 <- -0.09
+  k_trn <- -0.514
+
+  mode_choice <- skims_need %>%
+    mutate(drive_utility = (coeff_ivtt*auto)+(coeff_cost*auto_cost*DIST),
+           nonmo_utility = (k_nmot + 20*(coeff_walk1*nonmotor)),
+           trans_utility = k_trn + (coeff_ivtt*transit) 
+      ) %>%
+    mutate(ex_drive_util = exp(drive_utility),
+           ex_nonmo_util = if_else(DIST > 2, 0, exp(nonmo_utility)),
+           ex_trans_util = if_else(transit == 0, 0, exp(trans_utility))
+      ) %>%
+    mutate(denom = ex_drive_util + ex_nonmo_util + ex_trans_util,
+           denom_util = if_else(denom == 0, 1, denom),
+           logsum = log(denom_util)
+      ) %>%
+    select(c("origin", "destination", "ex_drive_util", "ex_nonmo_util", "ex_trans_util", "denom_util", "logsum" ))
 }
 
 # run destination choice calculator / compute destination choice
 
 # compute mode choice probability
+mc_probability <- function(mode_skims){
+  mode_skims %>%
+    mutate(drive_prob = ex_drive_util / denom_util,
+           nonmo_prob = ex_nonmo_util / denom_util, 
+           trans_prob = ex_trans_util / denom_util 
+      )
+}
