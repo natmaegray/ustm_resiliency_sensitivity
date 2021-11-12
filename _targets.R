@@ -39,16 +39,23 @@ data_targets <- list(
   tar_target(dc_param_file, "data/DC_parameters.csv", format = "file"),
   tar_target(mc_coeff, readCSV(mc_coeff_file)),
   tar_target(mc_const, readCSV(mc_const_file)),
-  tar_target(dc_param, readCSV(dc_param_file))
-  
-  # run trip gen
+  tar_target(dc_param, readCSV(dc_param_file)),
   
   
   # run mode choice logsum calculator
+  tar_target(HBW, mode <- "HBW"),
+  tar_target(HBW_mc_logsum_skim, mc_logsum(HBW, skims, mc_coeff, mc_const)),
+  tar_target(HBO, mode <- "HBO"),
+  tar_target(HBO_mc_logsum_skim, mc_logsum(HBO, skims, mc_coeff, mc_const)),
+  tar_target(NHB, mode <- "NHB"),
+  tar_target(NHB_mc_logsum_skim, mc_logsum(NHB, skims, mc_coeff, mc_const)),
   
   # run destination choice calculator / compute destination choice
   
   # compute mode choice probability
+  tar_target(HBW_probability, mc_probability(HBW_mc_logsum_skim)),
+  tar_target(HBO_probability, mc_probability(HBO_mc_logsum_skim)),
+  tar_target(NHB_probability, mc_probability(NHB_mc_logsum_skim))
 )
 
 
