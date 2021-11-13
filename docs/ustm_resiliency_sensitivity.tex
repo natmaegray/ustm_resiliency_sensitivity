@@ -92,113 +92,6 @@
 
 There exists uncertainty in travel demand models. This is known by transportation planners but the majority do not use any particular method to quantify it. This uncertainty exists mostly due to the variance among input parameters. A coefficient of variation can be used to approximate the standard deviation of the inputs, which then provides a range of values that are possible for model input \citep{zhao2002propagation}. A sampling method can then be used to determine the possible combinations of parameter variance. Two popular sampling methods are Monte Carlo simulation and Latin Hypercube sampling. Monte Carlo simulation is capable of providing full variance probability, but requires large computations to be effective on a large scale model \citep{yang2013sensitivity}. Latin Hypercube sampling reduces the amount variants needed, but the question arises on if the same result be achieved with fewer samples, and how many samples is that?
 
-The inputs for sampling that will be used are mode choice coefficients, mode choice constants, and destination choice parameters. These inputs are shown in Table \ref{tab:MCcoeff}, Table \ref{tab:MCconst}, and Table \ref{tab:DCparam}.
-
-\begin{table}
-
-\caption{\label{tab:MCcoeff}Mode Choice Coefficients}
-\centering
-\begin{tabular}[t]{l|r|r|r}
-\hline
-Name & HBW & HBO & NHB\\
-\hline
-CIVTT & -0.0450 & -0.0350 & -0.0400\\
-\hline
-CSWAIT & 0.0000 & 0.0000 & 0.0000\\
-\hline
-CLWAIT & 0.0000 & 0.0000 & 0.0000\\
-\hline
-CXWAIT & 0.0000 & 0.0000 & 0.0000\\
-\hline
-CCOST & -0.0016 & -0.0016 & -0.0016\\
-\hline
-CDRIVE & 0.0000 & 0.0000 & 0.0000\\
-\hline
-CTERML & 0.0000 & 0.0000 & 0.0000\\
-\hline
-CWALK & 0.0000 & 0.0000 & 0.0000\\
-\hline
-CWALK1 & -0.0900 & -0.0700 & -0.0800\\
-\hline
-CWALK2 & -0.1350 & -0.1050 & -0.1200\\
-\hline
-CBIKE1 & 0.0000 & 0.0000 & 0.0000\\
-\hline
-CBIKE2 & 0.0000 & 0.0000 & 0.0000\\
-\hline
-DWalkBIKE & 1.0000 & 1.0000 & 1.0000\\
-\hline
-NC1 & 1.0000 & 1.0000 & 1.0000\\
-\hline
-NC2 & 1.0000 & 1.0000 & 1.0000\\
-\hline
-NC3 & 1.0000 & 1.0000 & 1.0000\\
-\hline
-CBD & 0.0000 & 0.0000 & 0.0000\\
-\hline
-NXFER & 0.0000 & 0.0000 & 0.0000\\
-\hline
-AUTOCOST & 18.3000 & 18.3000 & 18.3000\\
-\hline
-SHAREFAC & 0.0000 & 0.0000 & 0.0000\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:MCconst}Mode Choice Constants}
-\centering
-\begin{tabular}[t]{l|r|r|r}
-\hline
-Name & HBW & HBO & NHB\\
-\hline
-K\_SR & 0.0000 & 0.0000 & 0.0000\\
-\hline
-K\_TRN & -0.5140 & -0.9853 & -1.3020\\
-\hline
-K\_NMOT & 1.7602 & 0.5448 & -0.5359\\
-\hline
-K\_PREM & 0.0000 & 0.0000 & 0.0000\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:DCparam}Destination Choice Parameters}
-\centering
-\begin{tabular}[t]{l|r|r|r}
-\hline
-VAR & HBW & HBO & NHB\\
-\hline
-HH & 0.0000000 & 1.018700 & 0.207700\\
-\hline
-I(OTH\_EMP + OFF\_EMP) & 0.0000000 & 0.806400 & 0.562600\\
-\hline
-OFF\_EMP & 0.4586000 & 0.403200 & 0.281600\\
-\hline
-OTH\_EMP & 1.6827000 & 0.403200 & 0.281600\\
-\hline
-RET\_EMP & 0.6087000 & 3.813800 & 5.118900\\
-\hline
-DISTCAP & 70.0000000 & 40.000000 & 40.000000\\
-\hline
-CLSUM & 1.0000000 & 1.000000 & 1.000000\\
-\hline
-CDIST & -0.1956000 & -0.160600 & -0.210200\\
-\hline
-CDISTSQ & 0.0021000 & 0.002900 & 0.011200\\
-\hline
-CDISTCUB & -0.0000061 & -0.000011 & -0.000012\\
-\hline
-CLNDIST & 0.0000000 & 0.000000 & 0.000000\\
-\hline
-\end{tabular}
-\end{table}
-
-A dummy model will be created for this analysis from \url{https://github.com/ActivitySim/activitysim}.
-
 The research questions are therefore:
 
 \begin{itemize}
@@ -212,7 +105,60 @@ The research questions are therefore:
 \hypertarget{methods}{%
 \section{Methods}\label{methods}}
 
-Which describes the methods and data used in the article.
+To examine the effects of parameter input sensitivity, a 25 zone dummy model was created using data from \url{https://github.com/ActivitySim/activitysim}, and coefficient values from the USTM Resiliency Model.
+
+The inputs for sampling that will be used are mode choice coefficients, mode choice constants, and destination choice parameters. These inputs are shown in Table \ref{tab:MCcoeff}, and Table \ref{tab:MCconst}.
+
+\begin{table}
+
+\caption{\label{tab:MCcoeff}Mode Choice Coefficients}
+\centering
+\begin{tabular}[t]{l|r|r|r}
+\hline
+Name & HBW & HBO & NHB\\
+\hline
+CIVTT & -0.0450 & -0.0350 & -0.0400\\
+\hline
+CCOST & -0.0016 & -0.0016 & -0.0016\\
+\hline
+CWALK1 & -0.0900 & -0.0700 & -0.0800\\
+\hline
+AUTOCOST & 18.3000 & 18.3000 & 18.3000\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:MCconst}Mode Choice Constants}
+\centering
+\begin{tabular}[t]{l|r|r|r}
+\hline
+Name & HBW & HBO & NHB\\
+\hline
+K\_TRN & -0.5140 & -0.9853 & -1.3020\\
+\hline
+K\_NMOT & 1.7602 & 0.5448 & -0.5359\\
+\hline
+\end{tabular}
+\end{table}
+
+The shapefile for the dummy model is shown in Figure \ref{fig:TAZmap}.
+
+\begin{figure}
+
+{\centering \includegraphics{ustm_resiliency_sensitivity_files/figure-latex/TAZmap-1} 
+
+}
+
+\caption{TAZ Map with ID}\label{fig:TAZmap}
+\end{figure}
+
+A mode choice model was created with utility equations for Home Based Work Trips(HBW), Home Based Other Trips(HBO), and Non Home Based Trips(NHB).
+
+A coefficient of variation is used for each input parameter to determine a range for the values that can be used within the model, to estimate the sensitivity of these parameters.
+
+The initial model was run, the change was calculated on a random selection basis, and then using latin hyoercube sampling, to see if latin hypercube sampling can estimate uncertainty in fewer runs.
 
 \hypertarget{findings}{%
 \section{Findings}\label{findings}}

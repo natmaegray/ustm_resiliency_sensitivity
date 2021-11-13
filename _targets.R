@@ -8,7 +8,7 @@ library(targets)
 # and tar_read(summary) to view the results.
 
 # Set target-specific options such as packages.
-tar_option_set(packages = c("tidyverse", "bookdown", "omxr", "nhts2017"))
+tar_option_set(packages = c("tidyverse", "bookdown", "omxr", "nhts2017", "rgdal", "sf", "ggthemes"))
 
 # Define custom functions and other global objects.
 # This is where you write source(\"R/functions.R\")
@@ -62,6 +62,9 @@ data_targets <- list(
 
 # Targets necessary to build the book / article
 book_targets <- list(
+  tar_target(taz_file, "data/shapefile_taz.shp", format = "file"),
+  tar_target(tazmap_data, tazmap(taz_file)),
+  tar_target(map_plot, mapplot(tazmap_data))
 )
 
 

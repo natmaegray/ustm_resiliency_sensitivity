@@ -1,3 +1,37 @@
 # Methods
 
-Which describes the methods and data used in the article.
+To examine the effects of parameter input sensitivity, a 25 zone dummy model was created using data from <https://github.com/ActivitySim/activitysim>, and coefficient values from the USTM Resiliency Model.
+
+The inputs for sampling that will be used are mode choice coefficients, mode choice constants, and destination choice parameters. These inputs are shown in Table \@ref(tab:MCcoeff), and Table \@ref(tab:MCconst).
+
+```{r MCcoeff, echo = FALSE, results = 'axis'}
+tar_load(mc_coeff)
+mc_coeff2 <- mc_coeff %>%
+  filter(Name %in% c("CIVTT", "CCOST", "CWALK1", "AUTOCOST"))
+kable(mc_coeff2[,2:5], caption = "Mode Choice Coefficients")
+```
+
+```{r MCconst, echo = FALSE, results = 'axis'}
+tar_load(mc_const)
+mc_const2 <- mc_const %>%
+  filter(Name %in% c("K_TRN", "K_NMOT"))
+kable(mc_const2[,2:5], caption = "Mode Choice Constants")
+```
+
+```{r DCparam, echo = FALSE, results = 'axis'}
+#tar_load(dc_param)
+#kable(dc_param[,2:5], caption = "Destination Choice Parameters")
+```
+
+The shapefile for the dummy model is shown in Figure \@ref(fig:TAZmap). 
+
+```{r TAZmap, echo = FALSE, fig.align="center", results='asis', fig.cap = "TAZ Map with ID"}
+tar_load(map_plot)
+map_plot
+```
+
+A mode choice model was created with utility equations for Home Based Work Trips(HBW), Home Based Other Trips(HBO), and Non Home Based Trips(NHB). 
+
+A coefficient of variation is used for each input parameter to determine a range for the values that can be used within the model, to estimate the sensitivity of these parameters.
+
+The initial model was run, the change was calculated on a random selection basis, and then using latin hyoercube sampling, to see if latin hypercube sampling can estimate uncertainty in fewer runs.

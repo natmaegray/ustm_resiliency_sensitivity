@@ -111,3 +111,19 @@ mc_probability <- function(mode_skims){
       ) %>%
     select(c("origin", "destination", "drive_prob", "nonmo_prob", "trans_prob"))
 }
+
+tazmap <- function(path){
+  my_spdf <- readOGR(path)
+  sf_object <- st_as_sf(my_spdf, plot = FALSE, fill = TRUE) %>%
+    filter(TAZ1454 < 26) %>%
+    select(c("geometry","TAZ1454") )
+}
+
+
+mapplot <- function(map_data){
+  ggplot() + 
+    geom_sf(data = map_data, size = 1, color = "black", fill = "grey") + 
+    geom_sf_text(data = map_data, aes(label = TAZ1454)) +
+    coord_sf() +
+    theme_map()
+}

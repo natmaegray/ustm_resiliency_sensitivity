@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2021-10-01" />
+<meta name="date" content="2021-11-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -130,7 +130,80 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="methods" class="section level1" number="2">
 <h1><span class="header-section-number"> 2</span> Methods</h1>
-<p>Which describes the methods and data used in the article.</p>
+<p>To examine the effects of parameter input sensitivity, a 25 zone dummy model was created using data from <a href="https://github.com/ActivitySim/activitysim" class="uri">https://github.com/ActivitySim/activitysim</a>, and coefficient values from the USTM Resiliency Model.</p>
+<p>The inputs for sampling that will be used are mode choice coefficients, mode choice constants, and destination choice parameters. These inputs are shown in Table <a href="methods.html#tab:MCcoeff">2.1</a>, and Table <a href="methods.html#tab:MCconst">2.2</a>.</p>
+<table>
+<caption><span id="tab:MCcoeff">Table 2.1: </span>Mode Choice Coefficients</caption>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="right">HBW</th>
+<th align="right">HBO</th>
+<th align="right">NHB</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CIVTT</td>
+<td align="right">-0.0450</td>
+<td align="right">-0.0350</td>
+<td align="right">-0.0400</td>
+</tr>
+<tr class="even">
+<td align="left">CCOST</td>
+<td align="right">-0.0016</td>
+<td align="right">-0.0016</td>
+<td align="right">-0.0016</td>
+</tr>
+<tr class="odd">
+<td align="left">CWALK1</td>
+<td align="right">-0.0900</td>
+<td align="right">-0.0700</td>
+<td align="right">-0.0800</td>
+</tr>
+<tr class="even">
+<td align="left">AUTOCOST</td>
+<td align="right">18.3000</td>
+<td align="right">18.3000</td>
+<td align="right">18.3000</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:MCconst">Table 2.2: </span>Mode Choice Constants</caption>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="right">HBW</th>
+<th align="right">HBO</th>
+<th align="right">NHB</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">K_TRN</td>
+<td align="right">-0.5140</td>
+<td align="right">-0.9853</td>
+<td align="right">-1.3020</td>
+</tr>
+<tr class="even">
+<td align="left">K_NMOT</td>
+<td align="right">1.7602</td>
+<td align="right">0.5448</td>
+<td align="right">-0.5359</td>
+</tr>
+</tbody>
+</table>
+<p>The shapefile for the dummy model is shown in Figure <a href="methods.html#fig:TAZmap">2.1</a>.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:TAZmap"></span>
+<img src="ustm_resiliency_sensitivity_files/figure-html/TAZmap-1.png" alt="TAZ Map with ID" width="672" />
+<p class="caption">
+Figure 2.1: TAZ Map with ID
+</p>
+</div>
+<p>A mode choice model was created with utility equations for Home Based Work Trips(HBW), Home Based Other Trips(HBO), and Non Home Based Trips(NHB).</p>
+<p>A coefficient of variation is used for each input parameter to determine a range for the values that can be used within the model, to estimate the sensitivity of these parameters.</p>
+<p>The initial model was run, the change was calculated on a random selection basis, and then using latin hyoercube sampling, to see if latin hypercube sampling can estimate uncertainty in fewer runs.</p>
 
 </div>
             </section>
