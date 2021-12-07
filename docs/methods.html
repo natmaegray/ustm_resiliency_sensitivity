@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2021-11-12" />
+<meta name="date" content="2021-12-06" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -130,8 +130,9 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="methods" class="section level1" number="2">
 <h1><span class="header-section-number"> 2</span> Methods</h1>
-<p>To examine the effects of parameter input sensitivity, a 25 zone dummy model was created using data from <a href="https://github.com/ActivitySim/activitysim" class="uri">https://github.com/ActivitySim/activitysim</a>, and coefficient values from the USTM Resiliency Model.</p>
-<p>The inputs for sampling that will be used are mode choice coefficients, mode choice constants, and destination choice parameters. These inputs are shown in Table <a href="methods.html#tab:MCcoeff">2.1</a>, and Table <a href="methods.html#tab:MCconst">2.2</a>.</p>
+<p>To examine the effects of parameter input sensitivity, a 25 zone dummy model was created using data from <a href="https://github.com/ActivitySim/activitysim" class="uri">https://github.com/ActivitySim/activitysim</a>. The skims data was read in to get the values between zones for the distance, the single occupancy vehicle AM time, the walk distance, and the AM time for walk to local bus total in vehicle time. Auto time is simplified using the SOV AM time, nonmotorized uses walking distance multiplied by a factor of average walking speed, and transit time uses the walk to local bus time. The activitysim household data is also used and then organized so that it is capped at 4 persons, 3 vehicles, and 2 workers per household. If the value is larger than that capacity is is marked as the high values.</p>
+<p>Activitysim doesn’t have trip productions so nhts2017 data <a href="https://github.com/byu-transpolab/nhts2017" class="uri">https://github.com/byu-transpolab/nhts2017</a> can be used to approximate them. Only weekday trips are used and the household sizes, vehicles, and workers are capped to the same extent as the activitysim households. The data is summarized by household sizes, vehicles and workers, and the weighted mean of each trip purpose is taken. The three trip purposes used are Home Based Work, Home Based Other, and Non-Home Based. The nhts2017 approximated productions are then applied to each household based on size, vehicles, and workers.</p>
+<p>Next mode choice parameters (constants and coefficients) are generated. The base values were obtained from the USTM Resiliency model. These values are shown in Table <a href="methods.html#tab:MCcoeff">2.1</a>, and Table <a href="methods.html#tab:MCconst">2.2</a>.</p>
 <table>
 <caption><span id="tab:MCcoeff">Table 2.1: </span>Mode Choice Coefficients</caption>
 <thead>
@@ -194,6 +195,19 @@ div.csl-indent {
 </tr>
 </tbody>
 </table>
+<p>A coefficient of variation is used to identify a standard deviation for each parameter. A set coefficient of variation of 0.30 is used for all six parameters. The standard deviation is equal to 0.30 multiplied by the mean, where the mean values are the base scenario parameters. (SD = CV*mean).</p>
+<p>The random sampling uses the R function of rnorm.</p>
+<pre><code>  rnorm(1, mean_value, 0.30*mean_value). </code></pre>
+<p>Ten random samples are taken, and the same function format is used for each of the six variables.</p>
+<p>Latinhypercube sampling uses the lhs package in R. Since this package only chooses variables on a zero to one scale, the values given the use the function</p>
+<pre><code>  qunif(X[,1], mean_value-0.30*mean_value, mean_value+0.30*mean_value) </code></pre>
+<p>to put the random sampling on the right scale needed for the given parameter. This is then applied for all six parameters for the five samples of latinhypercube sampling.</p>
+<p>Now the mode choice logsum can be calculated for each of the list types and their iterations.</p>
+<p>The utility exuations are as follows:</p>
+<pre><code>  drive_utility = (coeff_ivtt*auto)+(coeff_cost*auto_cost*DIST)
+  nonmo_utility = (k_nmot + 20*(coeff_walk1*nonmotor))
+  trans_utility = k_trn + (coeff_ivtt*transit) </code></pre>
+<p>These utilities are then exponentiated, added together, and the natural log is taken to get a logsum value for every origin and destination pair.</p>
 <p>The shapefile for the dummy model is shown in Figure <a href="methods.html#fig:TAZmap">2.1</a>.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:TAZmap"></span>
 <img src="ustm_resiliency_sensitivity_files/figure-html/TAZmap-1.png" alt="TAZ Map with ID" width="672" />
@@ -201,8 +215,6 @@ div.csl-indent {
 Figure 2.1: TAZ Map with ID
 </p>
 </div>
-<p>A mode choice model was created with utility equations for Home Based Work Trips(HBW), Home Based Other Trips(HBO), and Non Home Based Trips(NHB).</p>
-<p>A coefficient of variation is used for each input parameter to determine a range for the values that can be used within the model, to estimate the sensitivity of these parameters.</p>
 <p>The initial model was run, the change was calculated on a random selection basis, and then using latin hyoercube sampling, to see if latin hypercube sampling can estimate uncertainty in fewer runs.</p>
 
 </div>

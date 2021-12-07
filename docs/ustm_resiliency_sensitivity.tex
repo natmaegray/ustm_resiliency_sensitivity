@@ -90,14 +90,14 @@
 \hypertarget{questions}{%
 \section{Questions}\label{questions}}
 
-There exists uncertainty in travel demand models. This is known by transportation planners but the majority do not use any particular method to quantify it. This uncertainty exists mostly due to the variance among input parameters. A coefficient of variation can be used to approximate the standard deviation of the inputs, which then provides a range of values that are possible for model input \citep{zhao2002propagation}. A sampling method can then be used to determine the possible combinations of parameter variance. Two popular sampling methods are Monte Carlo simulation and Latin Hypercube sampling. Monte Carlo simulation is capable of providing full variance probability, but requires large computations to be effective on a large scale model \citep{yang2013sensitivity}. Latin Hypercube sampling reduces the amount variants needed, but the question arises on if the same result be achieved with fewer samples, and how many samples is that?
+There exists uncertainty in travel demand models. This is known by transportation planners but the majority do not use any particular method to quantify it. This uncertainty exists to some extent by the variance among input parameters. A coefficient of variation can be used to approximate the standard deviation of the inputs, which then provides a range of values that are possible for model input \citep{zhao2002propagation}. A sampling method can then be used to determine the possible combinations of parameter variance. Two popular sampling methods are Monte Carlo simulation and Latin Hypercube sampling. Monte Carlo simulation is capable of providing full variance probability, but requires large computations to be effective on a large scale model \citep{yang2013sensitivity}. Latin Hypercube sampling reduces the amount variants needed, but the question arises if the same result be achieved with fewer samples, and how many samples is that?
 
 The research questions are therefore:
 
 \begin{itemize}
 \tightlist
 \item
-  How many iterations of Latin Hypercube Sampling in a travel demand model are necessary to approximate random sampling methods (e.g., Monte Carlo simulation)?
+  Using a dummy travel demand model, can Latin Hypercube sampling simplify the iterations needed to approximate random sampling methods (e.g., Monte Carlo simulation)?
 \item
   Does this method of sampling have few enough iterations for statewide model application?
 \end{itemize}
@@ -105,9 +105,11 @@ The research questions are therefore:
 \hypertarget{methods}{%
 \section{Methods}\label{methods}}
 
-To examine the effects of parameter input sensitivity, a 25 zone dummy model was created using data from \url{https://github.com/ActivitySim/activitysim}, and coefficient values from the USTM Resiliency Model.
+To examine the effects of parameter input sensitivity, a 25 zone dummy model was created using data from \url{https://github.com/ActivitySim/activitysim}. The skims data was read in to get the values between zones for the distance, the single occupancy vehicle AM time, the walk distance, and the AM time for walk to local bus total in vehicle time. Auto time is simplified using the SOV AM time, nonmotorized uses walking distance multiplied by a factor of average walking speed, and transit time uses the walk to local bus time. The activitysim household data is also used and then organized so that it is capped at 4 persons, 3 vehicles, and 2 workers per household. If the value is larger than that capacity is is marked as the high values.
 
-The inputs for sampling that will be used are mode choice coefficients, mode choice constants, and destination choice parameters. These inputs are shown in Table \ref{tab:MCcoeff}, and Table \ref{tab:MCconst}.
+Activitysim doesn't have trip productions so nhts2017 data \url{https://github.com/byu-transpolab/nhts2017} can be used to approximate them. Only weekday trips are used and the household sizes, vehicles, and workers are capped to the same extent as the activitysim households. The data is summarized by household sizes, vehicles and workers, and the weighted mean of each trip purpose is taken. The three trip purposes used are Home Based Work, Home Based Other, and Non-Home Based. The nhts2017 approximated productions are then applied to each household based on size, vehicles, and workers.
+
+Next mode choice parameters (constants and coefficients) are generated. The base values were obtained from the USTM Resiliency model. These values are shown in Table \ref{tab:MCcoeff}, and Table \ref{tab:MCconst}.
 
 \begin{table}
 
@@ -143,6 +145,36 @@ K\_NMOT & 1.7602 & 0.5448 & -0.5359\\
 \end{tabular}
 \end{table}
 
+A coefficient of variation is used to identify a standard deviation for each parameter. A set coefficient of variation of 0.30 is used for all six parameters. The standard deviation is equal to 0.30 multiplied by the mean, where the mean values are the base scenario parameters. (SD = CV*mean).
+
+The random sampling uses the R function of rnorm.
+
+\begin{verbatim}
+  rnorm(1, mean_value, 0.30*mean_value). 
+\end{verbatim}
+
+Ten random samples are taken, and the same function format is used for each of the six variables.
+
+Latinhypercube sampling uses the lhs package in R. Since this package only chooses variables on a zero to one scale, the values given the use the function
+
+\begin{verbatim}
+  qunif(X[,1], mean_value-0.30*mean_value, mean_value+0.30*mean_value) 
+\end{verbatim}
+
+to put the random sampling on the right scale needed for the given parameter. This is then applied for all six parameters for the five samples of latinhypercube sampling.
+
+Now the mode choice logsum can be calculated for each of the list types and their iterations.
+
+The utility exuations are as follows:
+
+\begin{verbatim}
+  drive_utility = (coeff_ivtt*auto)+(coeff_cost*auto_cost*DIST)
+  nonmo_utility = (k_nmot + 20*(coeff_walk1*nonmotor))
+  trans_utility = k_trn + (coeff_ivtt*transit) 
+\end{verbatim}
+
+These utilities are then exponentiated, added together, and the natural log is taken to get a logsum value for every origin and destination pair.
+
 The shapefile for the dummy model is shown in Figure \ref{fig:TAZmap}.
 
 \begin{figure}
@@ -153,10 +185,6 @@ The shapefile for the dummy model is shown in Figure \ref{fig:TAZmap}.
 
 \caption{TAZ Map with ID}\label{fig:TAZmap}
 \end{figure}
-
-A mode choice model was created with utility equations for Home Based Work Trips(HBW), Home Based Other Trips(HBO), and Non Home Based Trips(NHB).
-
-A coefficient of variation is used for each input parameter to determine a range for the values that can be used within the model, to estimate the sensitivity of these parameters.
 
 The initial model was run, the change was calculated on a random selection basis, and then using latin hyoercube sampling, to see if latin hypercube sampling can estimate uncertainty in fewer runs.
 
