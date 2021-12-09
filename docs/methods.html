@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2021-12-08" />
+<meta name="date" content="2021-12-09" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -130,9 +130,9 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="methods" class="section level1" number="2">
 <h1><span class="header-section-number"> 2</span> Methods</h1>
-<p>To examine the effects of parameter input sensitivity, a 25 zone dummy model was created using data from <a href="https://github.com/ActivitySim/activitysim" class="uri">https://github.com/ActivitySim/activitysim</a>. The skims data was read in to get the values between zones for the distance, the single occupancy vehicle AM time, the walk distance, and the AM time for walk to local bus total in vehicle time. Auto time is simplified using the SOV AM time, nonmotorized uses walking distance multiplied by a factor of average walking speed, and transit time uses the walk to local bus time. The activitysim household data is also used and then organized so that it is capped at 4 persons, 3 vehicles, and 2 workers per household. If the value is larger than that capacity is is marked as the high values.</p>
-<p>Activitysim doesn’t have trip productions so nhts2017 data <a href="https://github.com/byu-transpolab/nhts2017" class="uri">https://github.com/byu-transpolab/nhts2017</a> can be used to approximate them. Only weekday trips are used and the household sizes, vehicles, and workers are capped to the same extent as the activitysim households. The data is summarized by household sizes, vehicles and workers, and the weighted mean of each trip purpose is taken. The three trip purposes used are Home Based Work, Home Based Other, and Non-Home Based. The nhts2017 approximated productions are then applied to each household based on size, vehicles, and workers.</p>
-<p>Next mode choice parameters (constants and coefficients) are generated. The base values were obtained from the USTM Resiliency model. These values are shown in Table <a href="methods.html#tab:MCcoeff">2.1</a>, and Table <a href="methods.html#tab:MCconst">2.2</a>.</p>
+<p>To examine the effects of parameter input sensitivity, a 25 zone dummy model was created using data from the <a href="https://github.com/ActivitySim/activitysim">ActivitySim GitHub repository</a>. The skims data was used to get the values between zones for the distance, the single occupancy vehicle (SOV) AM time, the walk distance, and the walk to local bus total AM time. Auto time was simplified using the SOV AM time, nonmotorized uses walking distance multiplied by a factor of average walking speed, and transit time uses the walk to local bus time. The ActivitySim household data was also used and then organized so that it was capped at 4 persons, 3 vehicles, and 2 workers per household. If the value was larger than that capacity it was marked as the high values.</p>
+<p>ActivitySim doesn’t have trip productions so <a href="https://github.com/byu-transpolab/nhts2017">2017 National Household Travel Survey data</a> (NHTS2017) can be used to approximate them. Only weekday trips are used and the household sizes, vehicles, and workers are capped to the same extent as the ActivitySim households. The data was summarized by household sizes, vehicles and workers, and the weighted mean of each trip purpose was taken. The three trip purposes used are Home Based Work (HBW), Home Based Other (HBO), and Non-Home Based (NHB). The NHTS2017 approximated productions are then applied to each household based on size, vehicles, and workers.</p>
+<p>Next mode choice parameters (constants and coefficients) are generated. The base values were obtained from the USTM Resiliency model. These values are shown in Table <a href="methods.html#tab:MCcoeff">2.1</a> and Table <a href="methods.html#tab:MCconst">2.2</a>.</p>
 <table>
 <caption><span id="tab:MCcoeff">Table 2.1: </span>Mode Choice Coefficients</caption>
 <thead>
@@ -195,56 +195,43 @@ div.csl-indent {
 </tr>
 </tbody>
 </table>
-<p>A coefficient of variation is used to identify a standard deviation for each parameter. A set coefficient of variation of 0.30 is used for all six parameters. The standard deviation is equal to 0.30 multiplied by the mean, where the mean values are the base scenario parameters. (SD = CV*mean).</p>
-<p>The random sampling uses the R function of rnorm.</p>
-<pre><code>rand_coeffs &lt;-lapply(1:ndraws, function(i){
-    list(&quot;ivtt&quot; = rnorm(1, coeff_ivtt, abs(0.30*coeff_ivtt)), 
-         &quot;ccost&quot; = rnorm(1, coeff_cost, abs(0.30*coeff_cost)), 
-         &quot;autocost&quot; = rnorm(1, auto_cost, abs(0.30*auto_cost)), 
-         &quot;walk1&quot; = rnorm(1, coeff_walk1, abs(0.30*coeff_walk1)), 
-         &quot;knmot&quot; = rnorm(1, k_nmot, abs(0.30*k_nmot)), 
-         &quot;k_trn&quot; = rnorm(1, k_trn, abs(0.30*k_trn)))
-    })</code></pre>
-<p>Latinhypercube sampling uses the lhs package in R. Since this package only chooses variables on a zero to one scale, the values given the use the function</p>
-<pre><code>X &lt;- randomLHS(ndraws, 6) 
-  X[,1] &lt;- qnorm(X[,1], coeff_ivtt, abs(0.30*coeff_ivtt)) 
-  X[,2] &lt;- qnorm(X[,2], coeff_cost, abs(0.30*coeff_cost)) 
-  X[,3] &lt;- qnorm(X[,3], auto_cost, abs(0.30*auto_cost)) 
-  X[,4] &lt;- qnorm(X[,4], coeff_walk1, abs(0.30*coeff_walk1))
-  X[,5] &lt;- qnorm(X[,5], k_nmot, abs(0.30*k_nmot)) 
-  X[,6] &lt;- qnorm(X[,6], k_trn, abs(0.30*k_trn))
-  
-lhs_coeffs &lt;-lapply(1:ndraws, function(i){
-    list(&quot;ivtt&quot; = X[i,1], 
-         &quot;ccost&quot; = X[i,2], 
-         &quot;autocost&quot; = X[i,3], 
-         &quot;walk1&quot; = X[i,4], 
-         &quot;knmot&quot; = X[i,5], 
-         &quot;k_trn&quot; = X[i,6])
-    })</code></pre>
-<p>to put the random sampling on the right scale needed for the given parameter. This is then applied for all six parameters for the five samples of latinhypercube sampling.</p>
-<p>100 and 600 draws of random samples are taken, the distribution is shown in Figure <a href="methods.html#fig:parameter100">2.1</a>.</p>
+<p>A coefficient of variation was used to identify a standard deviation for each parameter. A set coefficient of variation of 0.30 was used for all six parameters <span class="citation">(<a href="#ref-zhao2002propagation" role="doc-biblioref">Zhao and Kockelman 2002</a>)</span>. The standard deviation was equal to 0.30 multiplied by the mean, where the mean values in this situation are the base scenario parameters.</p>
+<p>The MC random sampling uses the R function of <code>rnorm</code>. LHS uses the <code>lhs</code> package in R. Since this package only chooses variables on a zero to one scale, the values given the use the following function to put the random sampling on the right scale needed for the given parameter. The full code for both methods can be found in a public
+<a href="https://github.com/natmaegray/ustm_resiliency_sensitivity">GitHub repository</a>.</p>
+<p>100 and 600 draws of random samples are taken, the distributions for the HBW parameters are shown in Figure <a href="methods.html#fig:parameter100">2.1</a> and Figure <a href="methods.html#fig:parameter600">2.2</a> respectively. These distributions show that LHS gives more normally distributed parameters with fewer draws than MC sampling.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:parameter100"></span>
 <img src="ustm_resiliency_sensitivity_files/figure-html/parameter100-1.png" alt="HBW Distributions for Input Parameters with 100 Draws" width="672" />
 <p class="caption">
 Figure 2.1: HBW Distributions for Input Parameters with 100 Draws
 </p>
 </div>
-<p>Now the mode choice logsum can be calculated for each of the list types and their iterations.</p>
-<p>The utility exuations are as follows:</p>
-<pre><code>  drive_utility = (coeff_ivtt*auto)+(coeff_cost*auto_cost*DIST)
-  nonmo_utility = (k_nmot + 20*(coeff_walk1*nonmotor))
-  trans_utility = k_trn + (coeff_ivtt*transit) </code></pre>
-<p>These utilities are then exponentiated, added together, and the natural log is taken to get a logsum value for every origin and destination pair.</p>
-<p>The shapefile for the dummy model is shown in Figure <a href="methods.html#fig:TAZmap">2.2</a>.</p>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:TAZmap"></span>
-<img src="ustm_resiliency_sensitivity_files/figure-html/TAZmap-1.png" alt="TAZ Map with ID" width="672" />
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:parameter600"></span>
+<img src="ustm_resiliency_sensitivity_files/figure-html/parameter600-1.png" alt="HBW Distributions for Input Parameters with 600 Draws" width="672" />
 <p class="caption">
-Figure 2.2: TAZ Map with ID
+Figure 2.2: HBW Distributions for Input Parameters with 600 Draws
 </p>
 </div>
-<p>The initial model was run, the change was calculated on a random selection basis, and then using latin hyoercube sampling, to see if latin hypercube sampling can estimate uncertainty in fewer runs.</p>
+<p>With these generated parameters a mode choice logsum value was calculated for each of the list types and their individual draws. The utility equations for the mode choice model are as follows:</p>
+<p><span class="math display" id="eq:driveutil">\[\begin{equation}
+{drive_utility} = ({coeff_ivtt}*{auto})+({coeff_cost}*{auto_cost}*{DIST})
+\tag{2.1}
+\end{equation}\]</span>
+<span class="math display" id="eq:nonmoutil">\[\begin{equation}
+{nonmo_utility} = ({k_nmot}+ 20 * ({coeff_walk1}*{nonmotor}))
+\tag{2.2}
+\end{equation}\]</span>
+<span class="math display" id="eq:transutil">\[\begin{equation}
+{trans_utility} = {k_trn} + ({coeff_ivtt}*{transit})
+\tag{2.3}
+\end{equation}\]</span></p>
+<p>These utilities were exponentiated, added together, and the natural log was taken to get a logsum value for every origin and destination pair. For each list of MC and LHS parameters the average logsum value was calculated, and the corresponding cumulative standard deviation was determined. The results of using 100 and 600 draws for each sampling method and purpose are described in the next section.</p>
 
+</div>
+<h3>References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-zhao2002propagation" class="csl-entry">
+Zhao, Yong, and Kara Maria Kockelman. 2002. <span>“The Propagation of Uncertainty Through Travel Demand Models: An Exploratory Analysis.”</span> <em>The Annals of Regional Science</em> 36 (1): 145–63.
+</div>
 </div>
             </section>
 
@@ -306,6 +293,20 @@ gitbook.start({
 });
 </script>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 
 </html>

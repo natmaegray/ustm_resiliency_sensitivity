@@ -1,6 +1,6 @@
 # Methods
 
-To examine the effects of parameter input sensitivity, a 25 zone dummy model was created using data from [ActivitySim GitHub Repository](https://github.com/ActivitySim/activitysim). The skims data was used to get the values between zones for the distance, the single occupancy vehicle (SOV) AM time, the walk distance, and the walk to local bus total AM time. Auto time was simplified using the SOV AM time, nonmotorized uses walking distance multiplied by a factor of average walking speed, and transit time uses the walk to local bus time. The ActivitySim household data was also used and then organized so that it was capped at 4 persons, 3 vehicles, and 2 workers per household. If the value was larger than that capacity it was marked as the high values. 
+To examine the effects of parameter input sensitivity, a 25 zone dummy model was created using data from the [ActivitySim GitHub repository](https://github.com/ActivitySim/activitysim). The skims data was used to get the values between zones for the distance, the single occupancy vehicle (SOV) AM time, the walk distance, and the walk to local bus total AM time. Auto time was simplified using the SOV AM time, nonmotorized uses walking distance multiplied by a factor of average walking speed, and transit time uses the walk to local bus time. The ActivitySim household data was also used and then organized so that it was capped at 4 persons, 3 vehicles, and 2 workers per household. If the value was larger than that capacity it was marked as the high values. 
 
 ActivitySim doesn't have trip productions so [2017 National Household Travel Survey data](https://github.com/byu-transpolab/nhts2017) (NHTS2017) can be used to approximate them. Only weekday trips are used and the household sizes, vehicles, and workers are capped to the same extent as the ActivitySim households. The data was summarized by household sizes, vehicles and workers, and the weighted mean of each trip purpose was taken. The three trip purposes used are Home Based Work (HBW), Home Based Other (HBO), and Non-Home Based (NHB). The NHTS2017 approximated productions are then applied to each household based on size, vehicles, and workers.
 
@@ -22,38 +22,10 @@ kable(mc_const2[,2:5], caption = "Mode Choice Constants")
 
 A coefficient of variation was used to identify a standard deviation for each parameter. A set coefficient of variation of 0.30 was used for all six parameters [@zhao2002propagation]. The standard deviation was equal to 0.30 multiplied by the mean, where the mean values in this situation are the base scenario parameters.
 
-The MC random sampling uses the R function of *rnorm*, such as:
-```
-rand_coeffs <-lapply(1:ndraws, function(i){
-    list("ivtt" = rnorm(1, coeff_ivtt, abs(0.30*coeff_ivtt)), 
-         "ccost" = rnorm(1, coeff_cost, abs(0.30*coeff_cost)), 
-         "autocost" = rnorm(1, auto_cost, abs(0.30*auto_cost)), 
-         "walk1" = rnorm(1, coeff_walk1, abs(0.30*coeff_walk1)), 
-         "knmot" = rnorm(1, k_nmot, abs(0.30*k_nmot)), 
-         "k_trn" = rnorm(1, k_trn, abs(0.30*k_trn)))
-    })
-```
-LHS uses the *lhs* package in R. Since this package only chooses variables on a zero to one scale, the values given the use the following function to put the random sampling on the right scale needed for the given parameter. 
-```
-X <- randomLHS(ndraws, 6) 
-  X[,1] <- qnorm(X[,1], coeff_ivtt, abs(0.30*coeff_ivtt)) 
-  X[,2] <- qnorm(X[,2], coeff_cost, abs(0.30*coeff_cost)) 
-  X[,3] <- qnorm(X[,3], auto_cost, abs(0.30*auto_cost)) 
-  X[,4] <- qnorm(X[,4], coeff_walk1, abs(0.30*coeff_walk1))
-  X[,5] <- qnorm(X[,5], k_nmot, abs(0.30*k_nmot)) 
-  X[,6] <- qnorm(X[,6], k_trn, abs(0.30*k_trn))
-  
-lhs_coeffs <-lapply(1:ndraws, function(i){
-    list("ivtt" = X[i,1], 
-         "ccost" = X[i,2], 
-         "autocost" = X[i,3], 
-         "walk1" = X[i,4], 
-         "knmot" = X[i,5], 
-         "k_trn" = X[i,6])
-    })
-```
+The MC random sampling uses the R function of `rnorm`. LHS uses the `lhs` package in R. Since this package only chooses variables on a zero to one scale, the values given the use the following function to put the random sampling on the right scale needed for the given parameter. The full code for both methods can be found in a public 
+[GitHub repository](https://github.com/natmaegray/ustm_resiliency_sensitivity).
 
-100 and 600 draws of random samples are taken, the distributions for the HBW parameters are shown in Figure \@ref(fig:parameter100) and Figure \@ref(fig:parameter600) respectively. These distributions show that LHS gives more normally distributed parameters with less draws than MC sampling.
+100 and 600 draws of random samples are taken, the distributions for the HBW parameters are shown in Figure \@ref(fig:parameter100) and Figure \@ref(fig:parameter600) respectively. These distributions show that LHS gives more normally distributed parameters with fewer draws than MC sampling.
 
 ```{r parameter100, echo = FALSE, fig.align="center", results='asis', fig.cap = "HBW Distributions for Input Parameters with 100 Draws"}
 tar_load(hbw_mc_coeff_lists_100)
@@ -70,6 +42,7 @@ Z %>%
   labs(y = "Density",
        x = "Value") +
   theme_bw() +
+  theme(legend.position = "bottom") +
   facet_wrap(vars(name), scales = "free")
 ```
 
@@ -88,14 +61,24 @@ Z %>%
   labs(y = "Density",
        x = "Value") +
   theme_bw() +
+  theme(legend.position = "bottom") +
   facet_wrap(vars(name), scales = "free")
 ```
 
 
 With these generated parameters a mode choice logsum value was calculated for each of the list types and their individual draws. The utility equations for the mode choice model are as follows:
-```
-  drive_utility = (coeff_ivtt*auto)+(coeff_cost*auto_cost*DIST)
-  nonmo_utility = (k_nmot + 20*(coeff_walk1*nonmotor))
-  trans_utility = k_trn + (coeff_ivtt*transit) 
-```
-These utilities were exponentiated, added together, and the natural log was taken to get a logsum value for every origin and destination pair. For each list of MC and LHS parameters the average logsum value was calculated, and the corresponding cumulative standard deviation was determined. The results of using 100 and 600 draws for each sampling method and purpose is described in the next section.
+
+\begin{equation}
+{drive_utility} = ({coeff_ivtt}*{auto})+({coeff_cost}*{auto_cost}*{DIST})
+(\#eq:driveutil)
+\end{equation}
+\begin{equation}
+{nonmo_utility} = ({k_nmot}+ 20 * ({coeff_walk1}*{nonmotor}))
+(\#eq:nonmoutil)
+\end{equation}
+\begin{equation}
+{trans_utility} = {k_trn} + ({coeff_ivtt}*{transit})
+(\#eq:transutil)
+\end{equation}
+
+These utilities were exponentiated, added together, and the natural log was taken to get a logsum value for every origin and destination pair. For each list of MC and LHS parameters the average logsum value was calculated, and the corresponding cumulative standard deviation was determined. The results of using 100 and 600 draws for each sampling method and purpose are described in the next section.

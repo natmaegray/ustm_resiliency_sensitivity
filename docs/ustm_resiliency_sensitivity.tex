@@ -90,14 +90,14 @@
 \hypertarget{questions}{%
 \section{Questions}\label{questions}}
 
-There exists uncertainty in travel demand models. This is known by transportation planners but the majority do not use any particular method to quantify it. This uncertainty exists to some extent by the variance among input parameters. A coefficient of variation can be used to approximate the standard deviation of the inputs, which then provides a range of values that are possible for model input \citep{zhao2002propagation}. A sampling method can then be used to determine the possible combinations of parameter variance. Two popular sampling methods are Monte Carlo simulation and Latin Hypercube sampling. Monte Carlo simulation is capable of providing full variance probability, but requires large computations to be effective on a large scale model \citep{yang2013sensitivity}. Latin Hypercube sampling reduces the amount variants needed, but the question arises if the same result be achieved with fewer samples, and how many samples is that?
+There exists uncertainty in travel demand models. This is known by transportation planners but the majority do not use any particular method to quantify it. This uncertainty exists to some extent by the variance among input parameters. A coefficient of variation can be used to approximate the standard deviation of the inputs, which then provides a range of values that are possible for model input \citep{zhao2002propagation}. A sampling method can then be used to determine the possible combinations of parameter variance. Two popular sampling methods are Monte Carlo (MC) simulation and Latin Hypercube Sampling (LHS). MC simulation is capable of providing full variance probability, but requires large computations to be effective on a large scale model. LHS reduces the amount of variants needed, but the amount of reduction is unknown. \citep{yang2013sensitivity}
 
 The research questions are therefore:
 
 \begin{itemize}
 \tightlist
 \item
-  Using a dummy travel demand model, can Latin Hypercube sampling simplify the iterations needed to approximate random sampling methods (e.g., Monte Carlo simulation)?
+  Using a dummy travel demand model, can Latin Hypercube Sampling simplify the iterations needed to approximate random sampling methods (e.g., Monte Carlo simulation)?
 \item
   Does this method of sampling have few enough iterations for statewide model application?
 \end{itemize}
@@ -105,11 +105,11 @@ The research questions are therefore:
 \hypertarget{methods}{%
 \section{Methods}\label{methods}}
 
-To examine the effects of parameter input sensitivity, a 25 zone dummy model was created using data from \url{https://github.com/ActivitySim/activitysim}. The skims data was read in to get the values between zones for the distance, the single occupancy vehicle AM time, the walk distance, and the AM time for walk to local bus total in vehicle time. Auto time is simplified using the SOV AM time, nonmotorized uses walking distance multiplied by a factor of average walking speed, and transit time uses the walk to local bus time. The activitysim household data is also used and then organized so that it is capped at 4 persons, 3 vehicles, and 2 workers per household. If the value is larger than that capacity is is marked as the high values.
+To examine the effects of parameter input sensitivity, a 25 zone dummy model was created using data from the \href{https://github.com/ActivitySim/activitysim}{ActivitySim GitHub repository}. The skims data was used to get the values between zones for the distance, the single occupancy vehicle (SOV) AM time, the walk distance, and the walk to local bus total AM time. Auto time was simplified using the SOV AM time, nonmotorized uses walking distance multiplied by a factor of average walking speed, and transit time uses the walk to local bus time. The ActivitySim household data was also used and then organized so that it was capped at 4 persons, 3 vehicles, and 2 workers per household. If the value was larger than that capacity it was marked as the high values.
 
-Activitysim doesn't have trip productions so nhts2017 data \url{https://github.com/byu-transpolab/nhts2017} can be used to approximate them. Only weekday trips are used and the household sizes, vehicles, and workers are capped to the same extent as the activitysim households. The data is summarized by household sizes, vehicles and workers, and the weighted mean of each trip purpose is taken. The three trip purposes used are Home Based Work, Home Based Other, and Non-Home Based. The nhts2017 approximated productions are then applied to each household based on size, vehicles, and workers.
+ActivitySim doesn't have trip productions so \href{https://github.com/byu-transpolab/nhts2017}{2017 National Household Travel Survey data} (NHTS2017) can be used to approximate them. Only weekday trips are used and the household sizes, vehicles, and workers are capped to the same extent as the ActivitySim households. The data was summarized by household sizes, vehicles and workers, and the weighted mean of each trip purpose was taken. The three trip purposes used are Home Based Work (HBW), Home Based Other (HBO), and Non-Home Based (NHB). The NHTS2017 approximated productions are then applied to each household based on size, vehicles, and workers.
 
-Next mode choice parameters (constants and coefficients) are generated. The base values were obtained from the USTM Resiliency model. These values are shown in Table \ref{tab:MCcoeff}, and Table \ref{tab:MCconst}.
+Next mode choice parameters (constants and coefficients) are generated. The base values were obtained from the USTM Resiliency model. These values are shown in Table \ref{tab:MCcoeff} and Table \ref{tab:MCconst}.
 
 \begin{table}
 
@@ -145,45 +145,12 @@ K\_NMOT & 1.7602 & 0.5448 & -0.5359\\
 \end{tabular}
 \end{table}
 
-A coefficient of variation is used to identify a standard deviation for each parameter. A set coefficient of variation of 0.30 is used for all six parameters. The standard deviation is equal to 0.30 multiplied by the mean, where the mean values are the base scenario parameters. (SD = CV*mean).
+A coefficient of variation was used to identify a standard deviation for each parameter. A set coefficient of variation of 0.30 was used for all six parameters \citep{zhao2002propagation}. The standard deviation was equal to 0.30 multiplied by the mean, where the mean values in this situation are the base scenario parameters.
 
-The random sampling uses the R function of rnorm.
+The MC random sampling uses the R function of \texttt{rnorm}. LHS uses the \texttt{lhs} package in R. Since this package only chooses variables on a zero to one scale, the values given the use the following function to put the random sampling on the right scale needed for the given parameter. The full code for both methods can be found in a public
+\href{https://github.com/natmaegray/ustm_resiliency_sensitivity}{GitHub repository}.
 
-\begin{verbatim}
-rand_coeffs <-lapply(1:ndraws, function(i){
-    list("ivtt" = rnorm(1, coeff_ivtt, abs(0.30*coeff_ivtt)), 
-         "ccost" = rnorm(1, coeff_cost, abs(0.30*coeff_cost)), 
-         "autocost" = rnorm(1, auto_cost, abs(0.30*auto_cost)), 
-         "walk1" = rnorm(1, coeff_walk1, abs(0.30*coeff_walk1)), 
-         "knmot" = rnorm(1, k_nmot, abs(0.30*k_nmot)), 
-         "k_trn" = rnorm(1, k_trn, abs(0.30*k_trn)))
-    })
-\end{verbatim}
-
-Latinhypercube sampling uses the lhs package in R. Since this package only chooses variables on a zero to one scale, the values given the use the function
-
-\begin{verbatim}
-X <- randomLHS(ndraws, 6) 
-  X[,1] <- qnorm(X[,1], coeff_ivtt, abs(0.30*coeff_ivtt)) 
-  X[,2] <- qnorm(X[,2], coeff_cost, abs(0.30*coeff_cost)) 
-  X[,3] <- qnorm(X[,3], auto_cost, abs(0.30*auto_cost)) 
-  X[,4] <- qnorm(X[,4], coeff_walk1, abs(0.30*coeff_walk1))
-  X[,5] <- qnorm(X[,5], k_nmot, abs(0.30*k_nmot)) 
-  X[,6] <- qnorm(X[,6], k_trn, abs(0.30*k_trn))
-  
-lhs_coeffs <-lapply(1:ndraws, function(i){
-    list("ivtt" = X[i,1], 
-         "ccost" = X[i,2], 
-         "autocost" = X[i,3], 
-         "walk1" = X[i,4], 
-         "knmot" = X[i,5], 
-         "k_trn" = X[i,6])
-    })
-\end{verbatim}
-
-to put the random sampling on the right scale needed for the given parameter. This is then applied for all six parameters for the five samples of latinhypercube sampling.
-
-100 and 600 draws of random samples are taken, the distribution is shown in Figure \ref{fig:parameter100}.
+100 and 600 draws of random samples are taken, the distributions for the HBW parameters are shown in Figure \ref{fig:parameter100} and Figure \ref{fig:parameter600} respectively. These distributions show that LHS gives more normally distributed parameters with fewer draws than MC sampling.
 
 \begin{figure}
 
@@ -194,35 +161,74 @@ to put the random sampling on the right scale needed for the given parameter. Th
 \caption{HBW Distributions for Input Parameters with 100 Draws}\label{fig:parameter100}
 \end{figure}
 
-Now the mode choice logsum can be calculated for each of the list types and their iterations.
-
-The utility exuations are as follows:
-
-\begin{verbatim}
-  drive_utility = (coeff_ivtt*auto)+(coeff_cost*auto_cost*DIST)
-  nonmo_utility = (k_nmot + 20*(coeff_walk1*nonmotor))
-  trans_utility = k_trn + (coeff_ivtt*transit) 
-\end{verbatim}
-
-These utilities are then exponentiated, added together, and the natural log is taken to get a logsum value for every origin and destination pair.
-
-The shapefile for the dummy model is shown in Figure \ref{fig:TAZmap}.
-
 \begin{figure}
 
-{\centering \includegraphics{ustm_resiliency_sensitivity_files/figure-latex/TAZmap-1} 
+{\centering \includegraphics{ustm_resiliency_sensitivity_files/figure-latex/parameter600-1} 
 
 }
 
-\caption{TAZ Map with ID}\label{fig:TAZmap}
+\caption{HBW Distributions for Input Parameters with 600 Draws}\label{fig:parameter600}
 \end{figure}
 
-The initial model was run, the change was calculated on a random selection basis, and then using latin hyoercube sampling, to see if latin hypercube sampling can estimate uncertainty in fewer runs.
+With these generated parameters a mode choice logsum value was calculated for each of the list types and their individual draws. The utility equations for the mode choice model are as follows:
+
+\begin{equation}
+{drive_utility} = ({coeff_ivtt}*{auto})+({coeff_cost}*{auto_cost}*{DIST})
+\label{eq:driveutil}
+\end{equation}
+\begin{equation}
+{nonmo_utility} = ({k_nmot}+ 20 * ({coeff_walk1}*{nonmotor}))
+\label{eq:nonmoutil}
+\end{equation}
+\begin{equation}
+{trans_utility} = {k_trn} + ({coeff_ivtt}*{transit})
+\label{eq:transutil}
+\end{equation}
+
+These utilities were exponentiated, added together, and the natural log was taken to get a logsum value for every origin and destination pair. For each list of MC and LHS parameters the average logsum value was calculated, and the corresponding cumulative standard deviation was determined. The results of using 100 and 600 draws for each sampling method and purpose are described in the next section.
 
 \hypertarget{findings}{%
 \section{Findings}\label{findings}}
 
-Which describes the results of what you found.
+100 draws
+
+\begin{figure}
+
+{\centering \includegraphics{ustm_resiliency_sensitivity_files/figure-latex/stats100-1} 
+
+}
+
+\caption{HBW Mean Logsum Standard Variation with 100 Draws}\label{fig:stats100}
+\end{figure}
+
+600 draws
+
+\begin{figure}
+
+{\centering \includegraphics{ustm_resiliency_sensitivity_files/figure-latex/stats600-1} 
+
+}
+
+\caption{HBW Mean Logsum Standard Variation with 600 Draws}\label{fig:stats600}
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics{ustm_resiliency_sensitivity_files/figure-latex/hbostats-1} 
+
+}
+
+\caption{HBO Mean Logsum Standard Variation with 100 and 600 Draws}\label{fig:hbostats}
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics{ustm_resiliency_sensitivity_files/figure-latex/nhbstats-1} 
+
+}
+
+\caption{NHB Mean Logsum Standard Variation with 100 and 600 Draws}\label{fig:nhbstats}
+\end{figure}
 
 \bibliography{book.bib}
 

@@ -1,3 +1,84 @@
 # Findings
 
-Which describes the results of what you found.
+100 draws
+
+```{r stats100, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", results='asis', fig.cap = "HBW Mean Logsum Standard Variation with 100 Draws"}
+tar_load(hbw_stats_100)
+
+hbw_stats_100 %>%
+  filter(type != "base") %>%
+  ggplot() +
+    aes(x = draw, y = cumvar, colour = type, group = type) +
+    geom_line(size = 0.5) +
+    ylim(0, 0.14) +
+    labs(x = "Draw", 
+         y = "Cumulative Standard Variation",
+         color = "method") +
+    scale_color_hue(direction = 1) +
+    theme_bw() +
+    theme(legend.position = "bottom")
+```
+
+
+600 draws
+```{r stats600, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", results='asis', fig.cap = "HBW Mean Logsum Standard Variation with 600 Draws"}
+tar_load(hbw_stats_600)
+
+hbw_stats_600 %>%
+  filter(type != "base") %>%
+  ggplot() +
+    aes(x = draw, y = cumvar, colour = type, group = type) +
+    geom_line(size = 0.5) +
+  ylim(0, 0.14) +
+    labs(x = "Draw", 
+         y = "Cumulative Standard Variation",
+         color = "method") +
+    scale_color_hue(direction = 1) +
+    theme_bw() +
+    theme(legend.position = "bottom")
+```
+
+```{r hbostats, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", results='asis', fig.cap = "HBO Mean Logsum Standard Variation with 100 and 600 Draws"}
+tar_load(hbo_stats_100)
+tar_load(hbo_stats_600)
+hbo_stats <- bind_rows(hbo_stats_100, hbo_stats_600, .id = "ndraws") %>%
+  mutate(ndraws = case_when(ndraws == "1" ~ "100 Draws",
+                          ndraws == "2" ~ "600 Draws"))
+
+hbo_stats %>%
+  filter(type != "base") %>%
+  ggplot() +
+    aes(x = draw, y = cumvar, colour = type, group = type) +
+    geom_line(size = 0.5) +
+    ylim(0.025, 0.15) +
+    labs(x = "Draw", 
+         y = "Cumulative Standard Variation",
+         color = "method") +
+    scale_color_hue(direction = 1) +
+    theme_bw() +
+    theme(legend.position = "bottom") +
+    facet_wrap(vars(ndraws), scales = "free_x")
+```
+
+```{r nhbstats, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", results='asis', fig.cap = "NHB Mean Logsum Standard Variation with 100 and 600 Draws"}
+tar_load(nhb_stats_100)
+tar_load(nhb_stats_600)
+nhb_stats <- bind_rows(nhb_stats_100, nhb_stats_600, .id = "ndraws") %>%
+  mutate(ndraws = case_when(ndraws == "1" ~ "100 Draws",
+                          ndraws == "2" ~ "600 Draws"))
+
+nhb_stats %>%
+  filter(type != "base") %>%
+  ggplot() +
+    aes(x = draw, y = cumvar, colour = type, group = type) +
+    geom_line(size = 0.5) +
+    ylim(0.025, 0.15) +
+    labs(x = "Draw", 
+         y = "Cumulative Standard Variation",
+         color = "method") +
+    scale_color_hue(direction = 1) +
+    theme_bw() +
+    theme(legend.position = "bottom") +
+    facet_wrap(vars(ndraws), scales = "free_x")
+
+```

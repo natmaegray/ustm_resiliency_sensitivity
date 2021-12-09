@@ -50,7 +50,7 @@ data_targets <- list(
   tar_target(hbw_mc_coeff_lists_100, generate_mc_coeff(HBW, mc_coeff, mc_const, 100)),
   tar_target(hbo_mc_coeff_lists_100, generate_mc_coeff(HBO, mc_coeff, mc_const, 100)), 
   tar_target(nhb_mc_coeff_lists_100, generate_mc_coeff(NHB, mc_coeff, mc_const, 100)),
-  tar_target(hbw_mc_coeff_lists_600, generate_mc_coeff(HBW, mc_coeff, mc_const, 600)),
+  tar_target(hbw_mc_coeff_lists_600n, generate_mc_coeff(HBW, mc_coeff, mc_const, 600)),
   tar_target(hbo_mc_coeff_lists_600, generate_mc_coeff(HBO, mc_coeff, mc_const, 600)), 
   tar_target(nhb_mc_coeff_lists_600, generate_mc_coeff(NHB, mc_coeff, mc_const, 600)),
   
@@ -58,7 +58,7 @@ data_targets <- list(
   tar_target(hbw_mc_logsummean_100, mc_logsum_loop(skims, hbw_mc_coeff_lists_100)),
   tar_target(hbo_mc_logsummean_100, mc_logsum_loop(skims, hbo_mc_coeff_lists_100)),
   tar_target(nhb_mc_logsummean_100, mc_logsum_loop(skims, nhb_mc_coeff_lists_100)),
-  tar_target(hbw_mc_logsummean_600, mc_logsum_loop(skims, hbw_mc_coeff_lists_600)),
+  tar_target(hbw_mc_logsummean_600, mc_logsum_loop(skims, hbw_mc_coeff_lists_600n)),
   tar_target(hbo_mc_logsummean_600, mc_logsum_loop(skims, hbo_mc_coeff_lists_600)),
   tar_target(nhb_mc_logsummean_600, mc_logsum_loop(skims, nhb_mc_coeff_lists_600)),
   
