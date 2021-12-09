@@ -79,11 +79,11 @@ generate_mc_coeff <- function(purpose, mc_coeff, mc_const, ndraws){
   coeff_ivtt <- mc_coeff_purpose[[1,2]]
   coeff_cost <- mc_coeff_purpose[[5,2]]
   auto_cost <- mc_coeff_purpose[[19,2]]
-  coeff_walk1 <- mc_coeff_purpose[[9,2]]   ### search and replace mode with purpose
+  coeff_walk1 <- mc_coeff_purpose[[9,2]]   
   
-  mc_const_mode <- mc_const %>% select(c("Name", purpose))
-  k_nmot <- mc_const_mode[[3,2]]
-  k_trn <- mc_const_mode[[2,2]]
+  mc_const_purpose <- mc_const %>% select(c("Name", purpose))
+  k_nmot <- mc_const_purpose[[3,2]]
+  k_trn <- mc_const_purpose[[2,2]]
   
   orig_coeffs <- list()
   orig_coeffs[[1]] <-  list("ivtt" = coeff_ivtt, 
@@ -106,19 +106,21 @@ generate_mc_coeff <- function(purpose, mc_coeff, mc_const, ndraws){
   
   #lhs
   X <- randomLHS(ndraws, 6) 
-  X[,1] <- -qunif(X[,1], -coeff_ivtt-0.30*-coeff_ivtt, -coeff_ivtt+0.30*-coeff_ivtt) 
-  X[,2] <- -qunif(X[,2], -coeff_cost-0.30*-coeff_cost, -coeff_cost+0.30*-coeff_cost) 
-  X[,3] <- qunif(X[,3], auto_cost-0.30*auto_cost, auto_cost+0.30*auto_cost) 
-  X[,4] <- -qunif(X[,4], -coeff_walk1-0.30*-coeff_walk1, -coeff_walk1+0.30*-coeff_walk1)
-  X[,5] <- qunif(X[,5], k_nmot-0.30*k_nmot, k_nmot+0.30*k_nmot) 
-  X[,6] <- -qunif(X[,6], -k_trn-0.30*-k_trn, -k_trn+0.30*-k_trn)
+  X[,1] <- qnorm(X[,1], coeff_ivtt, abs(0.30*coeff_ivtt)) 
+  X[,2] <- qnorm(X[,2], coeff_cost, abs(0.30*coeff_cost)) 
+  X[,3] <- qnorm(X[,3], auto_cost, abs(0.30*auto_cost)) 
+  X[,4] <- qnorm(X[,4], coeff_walk1, abs(0.30*coeff_walk1))
+  X[,5] <- qnorm(X[,5], k_nmot, abs(0.30*k_nmot)) 
+  X[,6] <- qnorm(X[,6], k_trn, abs(0.30*k_trn))
   
-  lhs_coeffs <- list()
-  lhs_coeffs[[1]] <-  list("ivtt" = X[1,1], "ccost" = X[1,2], "autocost" = X[1,3], "walk1" = X[1,4], "knmot" = X[1,5], "k_trn" = X[1,6])
-  lhs_coeffs[[2]] <-  list("ivtt" = X[2,1], "ccost" = X[2,2], "autocost" = X[2,3], "walk1" = X[2,4], "knmot" = X[2,5], "k_trn" = X[2,6])
-  lhs_coeffs[[3]] <-  list("ivtt" = X[3,1], "ccost" = X[3,2], "autocost" = X[3,3], "walk1" = X[3,4], "knmot" = X[3,5], "k_trn" = X[3,6])
-  lhs_coeffs[[4]] <-  list("ivtt" = X[4,1], "ccost" = X[4,2], "autocost" = X[4,3], "walk1" = X[4,4], "knmot" = X[4,5], "k_trn" = X[4,6])
-  lhs_coeffs[[5]] <-  list("ivtt" = X[5,1], "ccost" = X[5,2], "autocost" = X[5,3], "walk1" = X[5,4], "knmot" = X[5,5], "k_trn" = X[5,6])
+  lhs_coeffs <-lapply(1:ndraws, function(i){
+    list("ivtt" = X[i,1], 
+         "ccost" = X[i,2], 
+         "autocost" = X[i,3], 
+         "walk1" = X[i,4], 
+         "knmot" = X[i,5], 
+         "k_trn" = X[i,6])
+    })
   
   mc_coeff_list <- list()
   mc_coeff_list[[1]] <- orig_coeffs
@@ -167,19 +169,47 @@ mc_logsum <- function(skims, coeff_list){
 
 # loop mc logsums
 mc_logsum_loop <- function(skims, coeff_full){
-  baselogsums <- mc_logsum(skims, coeff_full[[1]])
+  baselogsums <- mc_logsum(skims, coeff_full[[1]][[1]]) 
+    basemeanlogsum <- tibble(draw = "1",
+                              meanlogsum = mean(baselogsums$logsum),
+                              type = "base")
+    
   montecarlologsums <- lapply(coeff_full[[2]], function(coeffs){
-    mc_logsum(skims, coeffs)
-  })
+    moncar_mc_logsum <- mc_logsum(skims, coeffs)
+    mc_mean <- tibble(meanlogsum = mean(moncar_mc_logsum$logsum),
+                      type = "MC")
+  }) %>%
+    bind_rows(.id = "draw") 
+  
   latinhyperlogsums <- lapply(coeff_full[[3]], function(coeffs){
-    mc_logsum(skims, coeffs)
-  })
+    lhs_mc_logsum <- mc_logsum(skims, coeffs)
+    lhs_mean <- tibble(meanlogsum = mean(lhs_mc_logsum$logsum), 
+                       type = "LHS")
+  }) %>%
+    bind_rows(.id = "draw")
+  
+  bind_rows(basemeanlogsum, montecarlologsums, latinhyperlogsums) %>%
+    mutate(draw = as.numeric(draw))
+}
+
+cumvar <- function (x, sd = TRUE) {
+  x <- x - x[sample.int(length(x), 1)]  ## see Remark 2 below
+  n <- seq_along(x)
+  v <- (cumsum(x ^ 2) - cumsum(x) ^ 2 / n) / (n - 1)
+  if (sd) v <- sqrt(v)
+  v
+}
+
+
+process_stats <- function(meanlogsums){
+  meanlogsums %>%
+    group_by(type) %>%
+    mutate(cumvar = cumvar(meanlogsum))
+  
 }
 
 
 # run destination choice calculator / compute destination choice
-
-
   #employment to trip attraction
 
 # compute mode choice probability

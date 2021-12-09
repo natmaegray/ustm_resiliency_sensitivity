@@ -33,48 +33,54 @@ data_targets <- list(
   tar_target(nhts_tripprod, nhts_2017(nhts_hh, nhts_trip)),
   tar_target(trips, tripprod(hh_clean, nhts_tripprod)),
   
-  # modes
-  tar_target(HBW, mode <- "HBW"),
-  tar_target(HBO, mode <- "HBO"),
-  tar_target(NHB, mode <- "NHB"),
+  # purposes
+  tar_target(HBW, purpose <- "HBW"),
+  tar_target(HBO, purpose <- "HBO"),
+  tar_target(NHB, purpose <- "NHB"),
   
   # read in mc / dc utilities
   tar_target(mc_coeff_file, "data/MC_coeff.csv", format = "file"),
   tar_target(mc_const_file, "data/MC_constants.csv", format = "file"),
-  tar_target(dc_param_file, "data/DC_parameters.csv", format = "file"),
+  #tar_target(dc_param_file, "data/DC_parameters.csv", format = "file"),
   tar_target(mc_coeff, readCSV(mc_coeff_file)),
   tar_target(mc_const, readCSV(mc_const_file)),
-  tar_target(dc_param, readCSV(dc_param_file)),
-  tar_target(hbw_mc_coeff_lists, generate_mc_coeff(HBW, mc_coeff, mc_const)),
+  #tar_target(dc_param, readCSV(dc_param_file)),
   
+  #generate MC coeffs
+  tar_target(hbw_mc_coeff_lists_100, generate_mc_coeff(HBW, mc_coeff, mc_const, 100)),
+  tar_target(hbo_mc_coeff_lists_100, generate_mc_coeff(HBO, mc_coeff, mc_const, 100)), 
+  tar_target(nhb_mc_coeff_lists_100, generate_mc_coeff(NHB, mc_coeff, mc_const, 100)),
+  tar_target(hbw_mc_coeff_lists_600, generate_mc_coeff(HBW, mc_coeff, mc_const, 600)),
+  tar_target(hbo_mc_coeff_lists_600, generate_mc_coeff(HBO, mc_coeff, mc_const, 600)), 
+  tar_target(nhb_mc_coeff_lists_600, generate_mc_coeff(NHB, mc_coeff, mc_const, 600)),
   
   # run mode choice logsum calculator
-  tar_target(HBW_mc_logsum_skim_base, mc_logsum(skims, hbw_mc_coeff_lists, 1, 1)),
-  tar_target(HBW_mc_logsum_skim_rand1, mc_logsum(skims, hbw_mc_coeff_lists, 2, 1)),
-  tar_target(HBW_mc_logsum_skim_rand2, mc_logsum(skims, hbw_mc_coeff_lists, 2, 2)),
-  tar_target(HBW_mc_logsum_skim_rand3, mc_logsum(skims, hbw_mc_coeff_lists, 2, 3)),
-  tar_target(HBW_mc_logsum_skim_rand4, mc_logsum(skims, hbw_mc_coeff_lists, 2, 4)),
-  tar_target(HBW_mc_logsum_skim_rand5, mc_logsum(skims, hbw_mc_coeff_lists, 2, 5)),
-  tar_target(HBW_mc_logsum_skim_rand6, mc_logsum(skims, hbw_mc_coeff_lists, 2, 6)),
-  tar_target(HBW_mc_logsum_skim_rand7, mc_logsum(skims, hbw_mc_coeff_lists, 2, 7)),
-  tar_target(HBW_mc_logsum_skim_rand8, mc_logsum(skims, hbw_mc_coeff_lists, 2, 8)),
-  tar_target(HBW_mc_logsum_skim_rand9, mc_logsum(skims, hbw_mc_coeff_lists, 2, 9)),
-  tar_target(HBW_mc_logsum_skim_rand10, mc_logsum(skims, hbw_mc_coeff_lists, 2, 10)),
-  tar_target(HBW_mc_logsum_skim_lhs1, mc_logsum(skims, hbw_mc_coeff_lists, 3, 1)),
-  tar_target(HBW_mc_logsum_skim_lhs2, mc_logsum(skims, hbw_mc_coeff_lists, 3, 2)),
-  tar_target(HBW_mc_logsum_skim_lhs3, mc_logsum(skims, hbw_mc_coeff_lists, 3, 3)),
-  tar_target(HBW_mc_logsum_skim_lhs4, mc_logsum(skims, hbw_mc_coeff_lists, 3, 4)),
-  tar_target(HBW_mc_logsum_skim_lhs5, mc_logsum(skims, hbw_mc_coeff_lists, 3, 5)),
-  #tar_target(HBO_mc_logsum_skim, mc_logsum(HBO, skims, mc_coeff, mc_const)),
-  #tar_target(NHB_mc_logsum_skim, mc_logsum(NHB, skims, mc_coeff, mc_const)),
+  tar_target(hbw_mc_logsummean_100, mc_logsum_loop(skims, hbw_mc_coeff_lists_100)),
+  tar_target(hbo_mc_logsummean_100, mc_logsum_loop(skims, hbo_mc_coeff_lists_100)),
+  tar_target(nhb_mc_logsummean_100, mc_logsum_loop(skims, nhb_mc_coeff_lists_100)),
+  tar_target(hbw_mc_logsummean_600, mc_logsum_loop(skims, hbw_mc_coeff_lists_600)),
+  tar_target(hbo_mc_logsummean_600, mc_logsum_loop(skims, hbo_mc_coeff_lists_600)),
+  tar_target(nhb_mc_logsummean_600, mc_logsum_loop(skims, nhb_mc_coeff_lists_600)),
   
+  # process stats
+  tar_target(hbw_stats_100, process_stats(hbw_mc_logsummean_100)),
+  tar_target(hbo_stats_100, process_stats(hbo_mc_logsummean_100)),
+  tar_target(nhb_stats_100, process_stats(nhb_mc_logsummean_100)),
+  tar_target(hbw_stats_600, process_stats(hbw_mc_logsummean_600)),
+  tar_target(hbo_stats_600, process_stats(hbo_mc_logsummean_600)),
+  tar_target(nhb_stats_600, process_stats(nhb_mc_logsummean_600)),
+
   # run destination choice calculator / compute destination choice
-  
   # compute mode choice probability
-  tar_target(HBW_probability_base, mc_probability(HBW_mc_logsum_skim_base))#,
-  #tar_target(HBO_probability, mc_probability(HBO_mc_logsum_skim)),
-  #tar_target(NHB_probability, mc_probability(NHB_mc_logsum_skim))
-)
+    #tar_target(HBW_probability_base, mc_probability(HBW_mc_logsum_skim_base)),
+    #tar_target(HBO_probability, mc_probability(HBO_mc_logsum_skim)),
+    #tar_target(NHB_probability, mc_probability(NHB_mc_logsum_skim)),
+
+  
+  
+  tar_target(dummy, 2+2)
+  
+  )
 
 
 # Targets necessary to build the book / article

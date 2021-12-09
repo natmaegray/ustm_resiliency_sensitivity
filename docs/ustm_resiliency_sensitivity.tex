@@ -150,18 +150,49 @@ A coefficient of variation is used to identify a standard deviation for each par
 The random sampling uses the R function of rnorm.
 
 \begin{verbatim}
-  rnorm(1, mean_value, 0.30*mean_value). 
+rand_coeffs <-lapply(1:ndraws, function(i){
+    list("ivtt" = rnorm(1, coeff_ivtt, abs(0.30*coeff_ivtt)), 
+         "ccost" = rnorm(1, coeff_cost, abs(0.30*coeff_cost)), 
+         "autocost" = rnorm(1, auto_cost, abs(0.30*auto_cost)), 
+         "walk1" = rnorm(1, coeff_walk1, abs(0.30*coeff_walk1)), 
+         "knmot" = rnorm(1, k_nmot, abs(0.30*k_nmot)), 
+         "k_trn" = rnorm(1, k_trn, abs(0.30*k_trn)))
+    })
 \end{verbatim}
-
-Ten random samples are taken, and the same function format is used for each of the six variables.
 
 Latinhypercube sampling uses the lhs package in R. Since this package only chooses variables on a zero to one scale, the values given the use the function
 
 \begin{verbatim}
-  qunif(X[,1], mean_value-0.30*mean_value, mean_value+0.30*mean_value) 
+X <- randomLHS(ndraws, 6) 
+  X[,1] <- qnorm(X[,1], coeff_ivtt, abs(0.30*coeff_ivtt)) 
+  X[,2] <- qnorm(X[,2], coeff_cost, abs(0.30*coeff_cost)) 
+  X[,3] <- qnorm(X[,3], auto_cost, abs(0.30*auto_cost)) 
+  X[,4] <- qnorm(X[,4], coeff_walk1, abs(0.30*coeff_walk1))
+  X[,5] <- qnorm(X[,5], k_nmot, abs(0.30*k_nmot)) 
+  X[,6] <- qnorm(X[,6], k_trn, abs(0.30*k_trn))
+  
+lhs_coeffs <-lapply(1:ndraws, function(i){
+    list("ivtt" = X[i,1], 
+         "ccost" = X[i,2], 
+         "autocost" = X[i,3], 
+         "walk1" = X[i,4], 
+         "knmot" = X[i,5], 
+         "k_trn" = X[i,6])
+    })
 \end{verbatim}
 
 to put the random sampling on the right scale needed for the given parameter. This is then applied for all six parameters for the five samples of latinhypercube sampling.
+
+100 and 600 draws of random samples are taken, the distribution is shown in Figure \ref{fig:parameter100}.
+
+\begin{figure}
+
+{\centering \includegraphics{ustm_resiliency_sensitivity_files/figure-latex/parameter100-1} 
+
+}
+
+\caption{HBW Distributions for Input Parameters with 100 Draws}\label{fig:parameter100}
+\end{figure}
 
 Now the mode choice logsum can be calculated for each of the list types and their iterations.
 

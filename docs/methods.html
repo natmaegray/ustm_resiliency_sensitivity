@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2021-12-06" />
+<meta name="date" content="2021-12-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -197,22 +197,50 @@ div.csl-indent {
 </table>
 <p>A coefficient of variation is used to identify a standard deviation for each parameter. A set coefficient of variation of 0.30 is used for all six parameters. The standard deviation is equal to 0.30 multiplied by the mean, where the mean values are the base scenario parameters. (SD = CV*mean).</p>
 <p>The random sampling uses the R function of rnorm.</p>
-<pre><code>  rnorm(1, mean_value, 0.30*mean_value). </code></pre>
-<p>Ten random samples are taken, and the same function format is used for each of the six variables.</p>
+<pre><code>rand_coeffs &lt;-lapply(1:ndraws, function(i){
+    list(&quot;ivtt&quot; = rnorm(1, coeff_ivtt, abs(0.30*coeff_ivtt)), 
+         &quot;ccost&quot; = rnorm(1, coeff_cost, abs(0.30*coeff_cost)), 
+         &quot;autocost&quot; = rnorm(1, auto_cost, abs(0.30*auto_cost)), 
+         &quot;walk1&quot; = rnorm(1, coeff_walk1, abs(0.30*coeff_walk1)), 
+         &quot;knmot&quot; = rnorm(1, k_nmot, abs(0.30*k_nmot)), 
+         &quot;k_trn&quot; = rnorm(1, k_trn, abs(0.30*k_trn)))
+    })</code></pre>
 <p>Latinhypercube sampling uses the lhs package in R. Since this package only chooses variables on a zero to one scale, the values given the use the function</p>
-<pre><code>  qunif(X[,1], mean_value-0.30*mean_value, mean_value+0.30*mean_value) </code></pre>
+<pre><code>X &lt;- randomLHS(ndraws, 6) 
+  X[,1] &lt;- qnorm(X[,1], coeff_ivtt, abs(0.30*coeff_ivtt)) 
+  X[,2] &lt;- qnorm(X[,2], coeff_cost, abs(0.30*coeff_cost)) 
+  X[,3] &lt;- qnorm(X[,3], auto_cost, abs(0.30*auto_cost)) 
+  X[,4] &lt;- qnorm(X[,4], coeff_walk1, abs(0.30*coeff_walk1))
+  X[,5] &lt;- qnorm(X[,5], k_nmot, abs(0.30*k_nmot)) 
+  X[,6] &lt;- qnorm(X[,6], k_trn, abs(0.30*k_trn))
+  
+lhs_coeffs &lt;-lapply(1:ndraws, function(i){
+    list(&quot;ivtt&quot; = X[i,1], 
+         &quot;ccost&quot; = X[i,2], 
+         &quot;autocost&quot; = X[i,3], 
+         &quot;walk1&quot; = X[i,4], 
+         &quot;knmot&quot; = X[i,5], 
+         &quot;k_trn&quot; = X[i,6])
+    })</code></pre>
 <p>to put the random sampling on the right scale needed for the given parameter. This is then applied for all six parameters for the five samples of latinhypercube sampling.</p>
+<p>100 and 600 draws of random samples are taken, the distribution is shown in Figure <a href="methods.html#fig:parameter100">2.1</a>.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:parameter100"></span>
+<img src="ustm_resiliency_sensitivity_files/figure-html/parameter100-1.png" alt="HBW Distributions for Input Parameters with 100 Draws" width="672" />
+<p class="caption">
+Figure 2.1: HBW Distributions for Input Parameters with 100 Draws
+</p>
+</div>
 <p>Now the mode choice logsum can be calculated for each of the list types and their iterations.</p>
 <p>The utility exuations are as follows:</p>
 <pre><code>  drive_utility = (coeff_ivtt*auto)+(coeff_cost*auto_cost*DIST)
   nonmo_utility = (k_nmot + 20*(coeff_walk1*nonmotor))
   trans_utility = k_trn + (coeff_ivtt*transit) </code></pre>
 <p>These utilities are then exponentiated, added together, and the natural log is taken to get a logsum value for every origin and destination pair.</p>
-<p>The shapefile for the dummy model is shown in Figure <a href="methods.html#fig:TAZmap">2.1</a>.</p>
+<p>The shapefile for the dummy model is shown in Figure <a href="methods.html#fig:TAZmap">2.2</a>.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:TAZmap"></span>
 <img src="ustm_resiliency_sensitivity_files/figure-html/TAZmap-1.png" alt="TAZ Map with ID" width="672" />
 <p class="caption">
-Figure 2.1: TAZ Map with ID
+Figure 2.2: TAZ Map with ID
 </p>
 </div>
 <p>The initial model was run, the change was calculated on a random selection basis, and then using latin hyoercube sampling, to see if latin hypercube sampling can estimate uncertainty in fewer runs.</p>
