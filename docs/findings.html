@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2021-12-09" />
+<meta name="date" content="2021-12-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -130,32 +130,32 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="findings" class="section level1" number="3">
 <h1><span class="header-section-number"> 3</span> Findings</h1>
-<p>100 draws</p>
+<p>The HBW results for the standard deviation are included in <a href="findings.html#fig:stats100">3.1</a> and <a href="findings.html#fig:stats600">3.2</a>. The results for the other two purposes (HBO and NHB) are in <a href="findings.html#fig:hbostats">3.3</a> and <a href="findings.html#fig:nhbstats">3.4</a>.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:stats100"></span>
-<img src="ustm_resiliency_sensitivity_files/figure-html/stats100-1.png" alt="HBW Mean Logsum Standard Variation with 100 Draws" width="672" />
+<img src="ustm_resiliency_sensitivity_files/figure-html/stats100-1.png" alt="HBW Mean Logsum Standard Variation with 100 Draws" width="75%" />
 <p class="caption">
 Figure 3.1: HBW Mean Logsum Standard Variation with 100 Draws
 </p>
 </div>
-600 draws
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:stats600"></span>
-<img src="ustm_resiliency_sensitivity_files/figure-html/stats600-1.png" alt="HBW Mean Logsum Standard Variation with 600 Draws" width="672" />
+<img src="ustm_resiliency_sensitivity_files/figure-html/stats600-1.png" alt="HBW Mean Logsum Standard Variation with 600 Draws" width="75%" />
 <p class="caption">
 Figure 3.2: HBW Mean Logsum Standard Variation with 600 Draws
 </p>
 </div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:hbostats"></span>
-<img src="ustm_resiliency_sensitivity_files/figure-html/hbostats-1.png" alt="HBO Mean Logsum Standard Variation with 100 and 600 Draws" width="672" />
+<img src="ustm_resiliency_sensitivity_files/figure-html/hbostats-1.png" alt="HBO Mean Logsum Standard Variation with 100 and 600 Draws" width="75%" />
 <p class="caption">
 Figure 3.3: HBO Mean Logsum Standard Variation with 100 and 600 Draws
 </p>
 </div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:nhbstats"></span>
-<img src="ustm_resiliency_sensitivity_files/figure-html/nhbstats-1.png" alt="NHB Mean Logsum Standard Variation with 100 and 600 Draws" width="672" />
+<img src="ustm_resiliency_sensitivity_files/figure-html/nhbstats-1.png" alt="NHB Mean Logsum Standard Variation with 100 and 600 Draws" width="75%" />
 <p class="caption">
 Figure 3.4: NHB Mean Logsum Standard Variation with 100 and 600 Draws
 </p>
 </div>
+<p>These figures show that LHS variation stabilized at a sooner number of draws than MC sampling does. In all six instances, LHS plateaued between 100 and 200 draws, where MC samples still had not stabilized at the same extent after 600 draws. With these results, LHS will be used and modified for a full-scale model using 150 draws of LHS input parameters.</p>
 
 </div>
             </section>

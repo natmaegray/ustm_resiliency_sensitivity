@@ -1,8 +1,8 @@
 # Findings
 
-100 draws
+The HBW results for the standard deviation are included in \@ref(fig:stats100) and \@ref(fig:stats600). The results for the other two purposes (HBO and NHB) are in \@ref(fig:hbostats) and \@ref(fig:nhbstats).
 
-```{r stats100, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", results='asis', fig.cap = "HBW Mean Logsum Standard Variation with 100 Draws"}
+```{r stats100, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", out.width = "75%", results='asis', fig.cap = "HBW Mean Logsum Standard Variation with 100 Draws"}
 tar_load(hbw_stats_100)
 
 hbw_stats_100 %>%
@@ -19,9 +19,7 @@ hbw_stats_100 %>%
     theme(legend.position = "bottom")
 ```
 
-
-600 draws
-```{r stats600, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", results='asis', fig.cap = "HBW Mean Logsum Standard Variation with 600 Draws"}
+```{r stats600, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", out.width = "75%", results='asis', fig.cap = "HBW Mean Logsum Standard Variation with 600 Draws"}
 tar_load(hbw_stats_600)
 
 hbw_stats_600 %>%
@@ -38,7 +36,7 @@ hbw_stats_600 %>%
     theme(legend.position = "bottom")
 ```
 
-```{r hbostats, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", results='asis', fig.cap = "HBO Mean Logsum Standard Variation with 100 and 600 Draws"}
+```{r hbostats, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", out.width = "75%", results='asis', fig.cap = "HBO Mean Logsum Standard Variation with 100 and 600 Draws"}
 tar_load(hbo_stats_100)
 tar_load(hbo_stats_600)
 hbo_stats <- bind_rows(hbo_stats_100, hbo_stats_600, .id = "ndraws") %>%
@@ -60,7 +58,7 @@ hbo_stats %>%
     facet_wrap(vars(ndraws), scales = "free_x")
 ```
 
-```{r nhbstats, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", results='asis', fig.cap = "NHB Mean Logsum Standard Variation with 100 and 600 Draws"}
+```{r nhbstats, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", out.width = "75%", results='asis', fig.cap = "NHB Mean Logsum Standard Variation with 100 and 600 Draws"}
 tar_load(nhb_stats_100)
 tar_load(nhb_stats_600)
 nhb_stats <- bind_rows(nhb_stats_100, nhb_stats_600, .id = "ndraws") %>%
@@ -82,3 +80,5 @@ nhb_stats %>%
     facet_wrap(vars(ndraws), scales = "free_x")
 
 ```
+
+These figures show that LHS variation stabilized at a sooner number of draws than MC sampling does. In all six instances, LHS plateaued between 100 and 200 draws, where MC samples still had not stabilized at the same extent after 600 draws. With these results, LHS will be used and modified for a full-scale model using 150 draws of LHS input parameters.

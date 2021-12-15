@@ -190,22 +190,20 @@ These utilities were exponentiated, added together, and the natural log was take
 \hypertarget{findings}{%
 \section{Findings}\label{findings}}
 
-100 draws
+The HBW results for the standard deviation are included in \ref{fig:stats100} and \ref{fig:stats600}. The results for the other two purposes (HBO and NHB) are in \ref{fig:hbostats} and \ref{fig:nhbstats}.
 
 \begin{figure}
 
-{\centering \includegraphics{ustm_resiliency_sensitivity_files/figure-latex/stats100-1} 
+{\centering \includegraphics[width=0.75\linewidth]{ustm_resiliency_sensitivity_files/figure-latex/stats100-1} 
 
 }
 
 \caption{HBW Mean Logsum Standard Variation with 100 Draws}\label{fig:stats100}
 \end{figure}
 
-600 draws
-
 \begin{figure}
 
-{\centering \includegraphics{ustm_resiliency_sensitivity_files/figure-latex/stats600-1} 
+{\centering \includegraphics[width=0.75\linewidth]{ustm_resiliency_sensitivity_files/figure-latex/stats600-1} 
 
 }
 
@@ -214,7 +212,7 @@ These utilities were exponentiated, added together, and the natural log was take
 
 \begin{figure}
 
-{\centering \includegraphics{ustm_resiliency_sensitivity_files/figure-latex/hbostats-1} 
+{\centering \includegraphics[width=0.75\linewidth]{ustm_resiliency_sensitivity_files/figure-latex/hbostats-1} 
 
 }
 
@@ -223,12 +221,14 @@ These utilities were exponentiated, added together, and the natural log was take
 
 \begin{figure}
 
-{\centering \includegraphics{ustm_resiliency_sensitivity_files/figure-latex/nhbstats-1} 
+{\centering \includegraphics[width=0.75\linewidth]{ustm_resiliency_sensitivity_files/figure-latex/nhbstats-1} 
 
 }
 
 \caption{NHB Mean Logsum Standard Variation with 100 and 600 Draws}\label{fig:nhbstats}
 \end{figure}
+
+These figures show that LHS variation stabilized at a sooner number of draws than MC sampling does. In all six instances, LHS plateaued between 100 and 200 draws, where MC samples still had not stabilized at the same extent after 600 draws. With these results, LHS will be used and modified for a full-scale model using 150 draws of LHS input parameters.
 
 \bibliography{book.bib}
 
