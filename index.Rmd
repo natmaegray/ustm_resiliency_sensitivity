@@ -23,15 +23,16 @@ layout: "3p, authoryear, review"
 biblio-style: apalike
 link-citations: yes
 abstract: |
-  This is where the abstract should go.
-description: "A short description"
+  The input parameters used in travel demand models contribute to result uncertainty. A coefficient of variation was used to determine the range of possible values for each parameter. Sampling methods can approximate a normal distribution of parameter values with a discrete number of draws. This paper looks at Monte Carlo sampling and Latin Hypercube sampling. A three-step travel demand model is created with a 25-zone dummy model to evaluate if Latin Hypercube sampling reduces the number of draws needed to approximate Monte Carlo sampling. The mean modechoice logsum value was used to evaluate a cumulative standard deviation of values based upon 100 and 600 draws of parameter values for each sampling method. The standard deviation for Latin hypercube samples stabilize between 100 and 200 draws, whereas Monte Carlo samples often haven't stabilized at 600 draws. Latin hypercube sampling does reduce the number of draws needed, to where it can be applied to a large-scale model.
+description: "Sensitivity analysis of input parameters on a 25-zone dummy model."
 keywords:
-  - Sensitivity Analysis
-  - Resiliency
+  - Sensitivity Analysis,
+  - Resiliency,
   - Latin Hypercube Sampling
 ---
 
 ```{r, include = FALSE}
+library(targets)
 library(readxl)
 library(tidyverse)
 library(knitr)
@@ -42,9 +43,9 @@ library(gridExtra)
 
 # Questions
 
-There exists uncertainty in travel demand models. This is known by transportation planners but the majority do not use any particular method to quantify it. This uncertainty exists to some extent by the variance among input parameters. A coefficient of variation can be used to approximate the standard deviation of the inputs, which then provides a range of values that are possible for model input [@zhao2002propagation]. A sampling method can then be used to determine the possible combinations of parameter variance. Two popular sampling methods are Monte Carlo (MC) simulation and Latin Hypercube Sampling (LHS). MC simulation is capable of providing full variance probability, but requires large computations to be effective on a large scale model. LHS reduces the amount of variants needed, but the amount of reduction is unknown. [@yang2013sensitivity]
+There exists uncertainty in travel demand models. This is known by transportation planners but the majority do not use any particular method to quantify it. This uncertainty exists to some extent by the variance among input parameters. Two popular sampling methods to draw from the range of possible parameters are Monte Carlo (MC) simulation and Latin Hypercube Sampling (LHS). MC simulation requires large computations to be effective on a statewide model. LHS reduces the number of variants needed, but the amount of reduction is unknown. [@yang2013sensitivity]
 
 The research questions are therefore:
 
-  - Using a dummy travel demand model, can Latin Hypercube Sampling simplify the iterations needed to approximate random sampling methods (e.g., Monte Carlo simulation)?
+  - Using a dummy travel demand model, can Latin Hypercube Sampling reduce the iterations needed to approximate random sampling methods (e.g., Monte Carlo simulation)?
   - Does this method of sampling have few enough iterations for statewide model application?

@@ -5,25 +5,25 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title> 2 Methods | USTM Resiliency Sensitivity Analysis</title>
-  <meta name="description" content="A short description" />
+  <meta name="description" content="Sensitivity analysis of input parameters on a 25-zone dummy model." />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
   <meta property="og:title" content=" 2 Methods | USTM Resiliency Sensitivity Analysis" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="A short description" />
+  <meta property="og:description" content="Sensitivity analysis of input parameters on a 25-zone dummy model." />
   
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content=" 2 Methods | USTM Resiliency Sensitivity Analysis" />
   
-  <meta name="twitter:description" content="A short description" />
+  <meta name="twitter:description" content="Sensitivity analysis of input parameters on a 25-zone dummy model." />
   
 
 
 
-<meta name="date" content="2021-12-14" />
+<meta name="date" content="2021-12-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -130,9 +130,28 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="methods" class="section level1" number="2">
 <h1><span class="header-section-number"> 2</span> Methods</h1>
-<p>To examine the effects of parameter input sensitivity, a 25 zone dummy model was created using data from the <a href="https://github.com/ActivitySim/activitysim">ActivitySim GitHub repository</a>. The skims data was used to get the values between zones for the distance, the single occupancy vehicle (SOV) AM time, the walk distance, and the walk to local bus total AM time. Auto time was simplified using the SOV AM time, nonmotorized uses walking distance multiplied by a factor of average walking speed, and transit time uses the walk to local bus time. The ActivitySim household data was also used and then organized so that it was capped at 4 persons, 3 vehicles, and 2 workers per household. If the value was larger than that capacity it was marked as the high values.</p>
-<p>ActivitySim doesn’t have trip productions so <a href="https://github.com/byu-transpolab/nhts2017">2017 National Household Travel Survey data</a> (NHTS2017) can be used to approximate them. Only weekday trips are used and the household sizes, vehicles, and workers are capped to the same extent as the ActivitySim households. The data was summarized by household sizes, vehicles and workers, and the weighted mean of each trip purpose was taken. The three trip purposes used are Home Based Work (HBW), Home Based Other (HBO), and Non-Home Based (NHB). The NHTS2017 approximated productions are then applied to each household based on size, vehicles, and workers.</p>
-<p>Next mode choice parameters (constants and coefficients) are generated. The base values were obtained from the USTM Resiliency model. These values are shown in Table <a href="methods.html#tab:MCcoeff">2.1</a> and Table <a href="methods.html#tab:MCconst">2.2</a>.</p>
+<p>To examine the effects of parameter input sensitivity, we developed a trip-based travel model with three steps:</p>
+<ol style="list-style-type: decimal">
+<li>trip generation,</li>
+<li>trip distribution, and</li>
+<li>mode choice.</li>
+</ol>
+<p>Trip generation, the first step, was conducted using socioeconomic (SE) data from a 25-zone dummy model of the <a href="https://github.com/ActivitySim/activitysim">ActivitySim GitHub repository</a>. Trip production was estimated using the <a href="https://github.com/byu-transpolab/nhts2017">2017 National Household Travel Survey data</a> (NHTS2017). The trip productions were summarized by household sizes, vehicles, and workers, and the weighted mean of each trip purpose was taken. The three trip purposes used are Home Based Work (HBW), Home Based Other (HBO), and Non-Home Based (NHB). NHTS2017 data and the SE data were merged based upon their household size, vehicles, and workers with maximum thresholds set as 4 persons, 3 vehicles, and 2 workers per household. Trip attraction was skipped for this analysis.</p>
+<p>The second step, trip distribution, used distance and travel time skims from an example in the ActivitySim GitHub repository. The skims were simplified to use auto, nonmotorized, and transit modes. Travel time for auto used the single occupancy vehicle AM time, nonmotorized travel time used the walking distance skim multiplied by a factor of average walking speed, and transit time used the walk to local bus time.</p>
+<p>Mode choice, the third step, calculates utilities for the three modes. These utilities were exponentiated, added together, and the natural log was taken to get a logsum value for every origin and destination pair. The utility equations for the mode choice model are as follows:</p>
+<p><span class="math display" id="eq:driveutil">\[\begin{equation}
+\mathrm{drive\_utility} = (\mathrm{coeff\_ivtt}*\mathrm{auto})+(\mathrm{coeff\_cost}*\mathrm{auto\_cost}*\mathrm{DIST})
+\tag{2.1}
+\end{equation}\]</span>
+<span class="math display" id="eq:nonmoutil">\[\begin{equation}
+\mathrm{nonmo\_utility} = (\mathrm{k\_nmot}+ 20 * (\mathrm{coeff\_walk1}*\mathrm{nonmotor}))
+\tag{2.2}
+\end{equation}\]</span>
+<span class="math display" id="eq:transutil">\[\begin{equation}
+\mathrm{trans\_utility} = \mathrm{k\_trn} + (\mathrm{coeff\_ivtt}*\mathrm{transit})
+\tag{2.3}
+\end{equation}\]</span></p>
+<p>The mode choice parameters (constants and coefficients) were obtained from the <a href="https://github.com/byu-transpolab/ustm_resiliency">USTM Resiliency Model</a>. These values are shown in Table <a href="methods.html#tab:MCcoeff">2.1</a> and Table <a href="methods.html#tab:MCconst">2.2</a>.</p>
 <table>
 <caption><span id="tab:MCcoeff">Table 2.1: </span>Mode Choice Coefficients</caption>
 <thead>
@@ -195,36 +214,9 @@ div.csl-indent {
 </tr>
 </tbody>
 </table>
-<p>A coefficient of variation was used to identify a standard deviation for each parameter. A set coefficient of variation of 0.30 was used for all six parameters <span class="citation">(<a href="#ref-zhao2002propagation" role="doc-biblioref">Zhao and Kockelman 2002</a>)</span>. The standard deviation was equal to 0.30 multiplied by the mean, where the mean values in this situation are the base scenario parameters.</p>
-<p>The MC random sampling uses the R function of <code>rnorm</code>. LHS uses the <code>lhs</code> package in R. Since this package only chooses variables on a zero to one scale, the values given the use the following function to put the random sampling on the right scale needed for the given parameter. The full code for both methods can be found in a public
-<a href="https://github.com/natmaegray/ustm_resiliency_sensitivity">GitHub repository</a>.</p>
-<p>100 and 600 draws of random samples are taken, the distributions for the HBW parameters are shown in Figure <a href="methods.html#fig:parameter100">2.1</a> and Figure <a href="methods.html#fig:parameter600">2.2</a> respectively. These distributions show that LHS gives more normally distributed parameters with fewer draws than MC sampling.</p>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:parameter100"></span>
-<img src="ustm_resiliency_sensitivity_files/figure-html/parameter100-1.png" alt="HBW Distributions for Input Parameters with 100 Draws" width="672" />
-<p class="caption">
-Figure 2.1: HBW Distributions for Input Parameters with 100 Draws
-</p>
-</div>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:parameter600"></span>
-<img src="ustm_resiliency_sensitivity_files/figure-html/parameter600-1.png" alt="HBW Distributions for Input Parameters with 600 Draws" width="672" />
-<p class="caption">
-Figure 2.2: HBW Distributions for Input Parameters with 600 Draws
-</p>
-</div>
-<p>With these generated parameters a mode choice logsum value was calculated for each of the list types and their individual draws. The utility equations for the mode choice model are as follows:</p>
-<p><span class="math display" id="eq:driveutil">\[\begin{equation}
-{drive_utility} = ({coeff_ivtt}*{auto})+({coeff_cost}*{auto_cost}*{DIST})
-\tag{2.1}
-\end{equation}\]</span>
-<span class="math display" id="eq:nonmoutil">\[\begin{equation}
-{nonmo_utility} = ({k_nmot}+ 20 * ({coeff_walk1}*{nonmotor}))
-\tag{2.2}
-\end{equation}\]</span>
-<span class="math display" id="eq:transutil">\[\begin{equation}
-{trans_utility} = {k_trn} + ({coeff_ivtt}*{transit})
-\tag{2.3}
-\end{equation}\]</span></p>
-<p>These utilities were exponentiated, added together, and the natural log was taken to get a logsum value for every origin and destination pair. For each list of MC and LHS parameters the average logsum value was calculated, and the corresponding cumulative standard deviation was determined. The results of using 100 and 600 draws for each sampling method and purpose are described in the next section.</p>
+<p>With this simple three-step model, MC and LHS methods were used to determine the possible combinations of parameter variance. To identify a standard deviation for each parameter, a coefficient of variation was used. A set coefficient of variation of 0.30 was used for all six input parameters <span class="citation">(<a href="#ref-zhao2002propagation" role="doc-biblioref">Zhao and Kockelman 2002</a>)</span>. The standard deviation was equal to 0.30 multiplied by the mean, where the mean values in this situation are the base scenario parameters (as identified in Table <a href="methods.html#tab:MCcoeff">2.1</a> and Table <a href="methods.html#tab:MCconst">2.2</a>).</p>
+<p>The MC random sampling uses the R function of <code>rnorm</code>. LHS uses the <code>lhs</code> package in R. Since this package only chooses variables on a zero to one scale, the values given use a function to put the random sampling on the right scale needed for the given parameter. The full code for both methods can be found in a public
+<a href="https://github.com/natmaegray/ustm_resiliency_sensitivity">GitHub repository</a>. 100 and 600 draws of random samples for both methods are generated. With these generated parameters, the mode choice model step was run for every set of input parameters for each purpose. The mean logsum value for each run was determined to compare each continuous draw.</p>
 
 </div>
 <h3>References</h3>

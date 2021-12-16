@@ -5,25 +5,25 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>USTM Resiliency Sensitivity Analysis</title>
-  <meta name="description" content="A short description" />
+  <meta name="description" content="Sensitivity analysis of input parameters on a 25-zone dummy model." />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
   <meta property="og:title" content="USTM Resiliency Sensitivity Analysis" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="A short description" />
+  <meta property="og:description" content="Sensitivity analysis of input parameters on a 25-zone dummy model." />
   
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="USTM Resiliency Sensitivity Analysis" />
   
-  <meta name="twitter:description" content="A short description" />
+  <meta name="twitter:description" content="Sensitivity analysis of input parameters on a 25-zone dummy model." />
   
 
 
 
-<meta name="date" content="2021-12-14" />
+<meta name="date" content="2021-12-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -140,18 +140,18 @@ Brigham Young University<br>
 Brigham Young University<br>
 <a class="author_email" href="mailto:#"><a href="mailto:nat.gray2000@gmail.com" class="email">nat.gray2000@gmail.com</a></a>
 </address>
-<p class="date"><em>2021-12-14</em></p>
+<p class="date"><em>2021-12-15</em></p>
 <div class="abstract">
 <p class="abstract">Abstract</p>
-<p>This is where the abstract should go.</p>
+<p>The input parameters used in travel demand models contribute to result uncertainty. A coefficient of variation was used to determine the range of possible values for each parameter. Sampling methods can approximate a normal distribution of parameter values with a discrete number of draws. This paper looks at Monte Carlo sampling and Latin Hypercube sampling. A three-step travel demand model is created with a 25-zone dummy model to evaluate if Latin Hypercube sampling reduces the number of draws needed to approximate Monte Carlo sampling. The mean modechoice logsum value was used to evaluate a cumulative standard deviation of values based upon 100 and 600 draws of parameter values for each sampling method. The standard deviation for Latin hypercube samples stabilize between 100 and 200 draws, whereas Monte Carlo samples often haven’t stabilized at 600 draws. Latin hypercube sampling does reduce the number of draws needed, to where it can be applied to a large-scale model.</p>
 </div>
 </div>
 <div id="questions" class="section level1" number="1">
 <h1><span class="header-section-number"> 1</span> Questions</h1>
-<p>There exists uncertainty in travel demand models. This is known by transportation planners but the majority do not use any particular method to quantify it. This uncertainty exists to some extent by the variance among input parameters. A coefficient of variation can be used to approximate the standard deviation of the inputs, which then provides a range of values that are possible for model input <span class="citation">(<a href="#ref-zhao2002propagation" role="doc-biblioref">Zhao and Kockelman 2002</a>)</span>. A sampling method can then be used to determine the possible combinations of parameter variance. Two popular sampling methods are Monte Carlo (MC) simulation and Latin Hypercube Sampling (LHS). MC simulation is capable of providing full variance probability, but requires large computations to be effective on a large scale model. LHS reduces the amount of variants needed, but the amount of reduction is unknown. <span class="citation">(<a href="#ref-yang2013sensitivity" role="doc-biblioref">Yang et al. 2013</a>)</span></p>
+<p>There exists uncertainty in travel demand models. This is known by transportation planners but the majority do not use any particular method to quantify it. This uncertainty exists to some extent by the variance among input parameters. Two popular sampling methods to draw from the range of possible parameters are Monte Carlo (MC) simulation and Latin Hypercube Sampling (LHS). MC simulation requires large computations to be effective on a statewide model. LHS reduces the number of variants needed, but the amount of reduction is unknown. <span class="citation">(<a href="#ref-yang2013sensitivity" role="doc-biblioref">Yang et al. 2013</a>)</span></p>
 <p>The research questions are therefore:</p>
 <ul>
-<li>Using a dummy travel demand model, can Latin Hypercube Sampling simplify the iterations needed to approximate random sampling methods (e.g., Monte Carlo simulation)?</li>
+<li>Using a dummy travel demand model, can Latin Hypercube Sampling reduce the iterations needed to approximate random sampling methods (e.g., Monte Carlo simulation)?</li>
 <li>Does this method of sampling have few enough iterations for statewide model application?</li>
 </ul>
 
@@ -160,9 +160,6 @@ Brigham Young University<br>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-yang2013sensitivity" class="csl-entry">
 Yang, Chao, Anthony Chen, Xiangdong Xu, and SC Wong. 2013. <span>“Sensitivity-Based Uncertainty Analysis of a Combined Travel Demand Model.”</span> <em>Transportation Research Part B: Methodological</em> 57: 225–44.
-</div>
-<div id="ref-zhao2002propagation" class="csl-entry">
-Zhao, Yong, and Kara Maria Kockelman. 2002. <span>“The Propagation of Uncertainty Through Travel Demand Models: An Exploratory Analysis.”</span> <em>The Annals of Regional Science</em> 36 (1): 145–63.
 </div>
 </div>
             </section>

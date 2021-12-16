@@ -1,39 +1,67 @@
 # Findings
 
-The HBW results for the standard deviation are included in \@ref(fig:stats100) and \@ref(fig:stats600). The results for the other two purposes (HBO and NHB) are in \@ref(fig:hbostats) and \@ref(fig:nhbstats).
+The parameters generated were compared for both sampling methods. Figure \@ref(fig:parameter100) shows the distributions for the HBW parameters when using 100 draws, and Figure \@ref(fig:parameter600) shows how that changes when using 600 draws. These distributions show that LHS gives normally distributed parameters with fewer draws than MC sampling. At 100 draws LHS shows a nearly perfect normal distribution, where there are some discrepancies for the MC generated parameters. Without looking at the mode choice results, these Figures show that LHS is likely to estimate the full variance of the results with much fewer draws.
 
-```{r stats100, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", out.width = "75%", results='asis', fig.cap = "HBW Mean Logsum Standard Variation with 100 Draws"}
-tar_load(hbw_stats_100)
+```{r parameter100, echo = FALSE, fig.align="center", results='asis', out.width = "75%", fig.cap = "HBW Distributions for Input Parameters with 100 Draws"}
+tar_load(hbw_mc_coeff_lists_100)
+list100 <- hbw_mc_coeff_lists_100
 
-hbw_stats_100 %>%
-  filter(type != "base") %>%
+Z <- bind_rows(list100) %>% mutate(method = c("base", rep("MC", 100), rep("LHS", 100))) %>% pivot_longer(cols = ivtt:k_trn)
+
+Z %>%
+  filter(!(method %in% "base")) %>%
   ggplot() +
-    aes(x = draw, y = cumvar, colour = type, group = type) +
-    geom_line(size = 0.5) +
-    ylim(0, 0.14) +
-    labs(x = "Draw", 
-         y = "Cumulative Standard Variation",
-         color = "method") +
-    scale_color_hue(direction = 1) +
-    theme_bw() +
-    theme(legend.position = "bottom")
+  aes(x = value, color = method, fill = method) +
+  geom_density(alpha = 0.25) +
+  scale_fill_hue(direction = 1) +
+  labs(y = "Density",
+       x = "Value") +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  facet_wrap(vars(name), scales = "free")
 ```
 
-```{r stats600, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", out.width = "75%", results='asis', fig.cap = "HBW Mean Logsum Standard Variation with 600 Draws"}
-tar_load(hbw_stats_600)
+```{r parameter600, echo = FALSE, fig.align="center", results='asis', out.width = "75%", fig.cap = "HBW Distributions for Input Parameters with 600 Draws"}
+tar_load(hbw_mc_coeff_lists_600)
+list600 <- hbw_mc_coeff_lists_600
 
-hbw_stats_600 %>%
+Z <- bind_rows(list600) %>% mutate(method = c("base", rep("MC", 600), rep("LHS", 600))) %>% pivot_longer(cols = ivtt:k_trn)
+
+Z %>%
+  filter(!(method %in% "base")) %>%
+  ggplot() +
+  aes(x = value, color = method, fill = method) +
+  geom_density(alpha = 0.25) +
+  scale_fill_hue(direction = 1) +
+  labs(y = "Density",
+       x = "Value") +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  facet_wrap(vars(name), scales = "free")
+```
+
+To determine if LHS is effective at a reasonable amount of iterations, the standard deviation was calculated for each additional draw. This value shows how much the mean mode choice logsum value for the 25 zones can vary. When the standard deviation for the draws stabilizes, that shows that the amount of generated parameters has captured all of the possible variances of the results. This can be visualized for each purpose. The HBW results for the cumulative standard deviation are shown in \@ref(fig:hbwstats). The results for the other two purposes (HBO and NHB) are in \@ref(fig:hbostats) and \@ref(fig:nhbstats) respectively. 
+
+```{r hbwstats, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", out.width = "75%", results='asis', fig.cap = "HBW Mean Logsum Standard Variation with 100 and 600 Draws"}
+tar_load(hbw_stats_100)
+tar_load(hbw_stats_600)
+hbw_stats <- bind_rows(hbw_stats_100, hbw_stats_600, .id = "ndraws") %>%
+  mutate(ndraws = case_when(ndraws == "1" ~ "100 Draws",
+                          ndraws == "2" ~ "600 Draws"))
+
+hbw_stats %>%
   filter(type != "base") %>%
   ggplot() +
     aes(x = draw, y = cumvar, colour = type, group = type) +
     geom_line(size = 0.5) +
-  ylim(0, 0.14) +
+    ylim(0.025, 0.15) +
     labs(x = "Draw", 
-         y = "Cumulative Standard Variation",
+         y = "Cumulative Standard Deviation",
          color = "method") +
     scale_color_hue(direction = 1) +
     theme_bw() +
-    theme(legend.position = "bottom")
+    theme(legend.position = "bottom") +
+    facet_wrap(vars(ndraws), scales = "free_x")
 ```
 
 ```{r hbostats, warning = FALSE, echo = FALSE, message = FALSE, fig.align="center", out.width = "75%", results='asis', fig.cap = "HBO Mean Logsum Standard Variation with 100 and 600 Draws"}
@@ -50,7 +78,7 @@ hbo_stats %>%
     geom_line(size = 0.5) +
     ylim(0.025, 0.15) +
     labs(x = "Draw", 
-         y = "Cumulative Standard Variation",
+         y = "Cumulative Standard Deviation",
          color = "method") +
     scale_color_hue(direction = 1) +
     theme_bw() +
@@ -72,7 +100,7 @@ nhb_stats %>%
     geom_line(size = 0.5) +
     ylim(0.025, 0.15) +
     labs(x = "Draw", 
-         y = "Cumulative Standard Variation",
+         y = "Cumulative Standard Deviation",
          color = "method") +
     scale_color_hue(direction = 1) +
     theme_bw() +
@@ -81,4 +109,4 @@ nhb_stats %>%
 
 ```
 
-These figures show that LHS variation stabilized at a sooner number of draws than MC sampling does. In all six instances, LHS plateaued between 100 and 200 draws, where MC samples still had not stabilized at the same extent after 600 draws. With these results, LHS will be used and modified for a full-scale model using 150 draws of LHS input parameters.
+For all three trip purposes, the LHS method had its standard deviation stabilized between 100 and 200 draws. The MC method had still not stabilized to the same extent after 600 draws. This shows us that Latin Hypercube Sampling greatly decreases the iterations needed to approximate random sampling methods. Since LHS captures the possible variance at a small enough amount of iterations, it can and will be used for a statewide model.
