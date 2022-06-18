@@ -6,7 +6,7 @@ The parameters generated were compared for both sampling methods. Figure \@ref(f
 tar_load(hbw_mc_coeff_lists_100)
 list100 <- hbw_mc_coeff_lists_100
 
-Z <- bind_rows(list100) %>% mutate(method = c("base", rep("MC", 100), rep("LHS", 100))) %>% pivot_longer(cols = ivtt:k_trn)
+Z <- bind_rows(list100) %>% mutate(method = c("base", rep("MC", 100), rep("LHS", 100))) %>% pivot_longer(cols = ivtt:walk2)
 
 Z %>%
   filter(!(method %in% "base")) %>%
@@ -25,7 +25,7 @@ Z %>%
 tar_load(hbw_mc_coeff_lists_600)
 list600 <- hbw_mc_coeff_lists_600
 
-Z <- bind_rows(list600) %>% mutate(method = c("base", rep("MC", 600), rep("LHS", 600))) %>% pivot_longer(cols = ivtt:k_trn)
+Z <- bind_rows(list600) %>% mutate(method = c("base", rep("MC", 600), rep("LHS", 600))) %>% pivot_longer(cols = ivtt:walk2)
 
 Z %>%
   filter(!(method %in% "base")) %>%
@@ -52,9 +52,10 @@ hbw_stats <- bind_rows(hbw_stats_100, hbw_stats_600, .id = "ndraws") %>%
 hbw_stats %>%
   filter(type != "base") %>%
   ggplot() +
-    aes(x = draw, y = cumvar, colour = type, group = type) +
+    aes(x = draw, y = cummean, ymin = cummean - 1.96*cumvar, ymax = cummean + 1.96*cumvar, colour = type, fill = type, group = type) +
+    geom_ribbon(alpha = 0.2, colour = NA) +
     geom_line(size = 0.5) +
-    ylim(0.025, 0.15) +
+#    ylim(0.025, 0.15) +
     labs(x = "Draw", 
          y = "Cumulative Standard Deviation",
          color = "method") +

@@ -8,7 +8,7 @@ library(targets)
 # and tar_read(summary) to view the results.
 
 # Set target-specific options such as packages.
-tar_option_set(packages = c("tidyverse", "bookdown", "omxr", "nhts2017", "rgdal", "sf", "ggthemes", "lhs"))
+tar_option_set(packages = c("tidyverse", "bookdown", "omxr", "nhts2017", "rgdal", "sf", "ggthemes", "lhs", "foreign"))
 
 # Define custom functions and other global objects.
 # This is where you write source(\"R/functions.R\")
@@ -41,34 +41,43 @@ data_targets <- list(
   # read in mc / dc utilities
   tar_target(mc_coeff_file, "data/MC_coeff.csv", format = "file"),
   tar_target(mc_const_file, "data/MC_constants.csv", format = "file"),
-  #tar_target(dc_param_file, "data/DC_parameters.csv", format = "file"),
+  tar_target(dc_coeff_file, "data/DESTCHOICE_PARAMETERS.DBF", format = "file"),
   tar_target(mc_coeff, readCSV(mc_coeff_file)),
   tar_target(mc_const, readCSV(mc_const_file)),
-  #tar_target(dc_param, readCSV(dc_param_file)),
+  tar_target(dc_coeff, as_tibble(foreign::read.dbf(dc_coeff_file, as.is = TRUE))),
   
   #generate MC coeffs
   tar_target(hbw_mc_coeff_lists_100, generate_mc_coeff(HBW, mc_coeff, mc_const, 100)),
   tar_target(hbo_mc_coeff_lists_100, generate_mc_coeff(HBO, mc_coeff, mc_const, 100)), 
   tar_target(nhb_mc_coeff_lists_100, generate_mc_coeff(NHB, mc_coeff, mc_const, 100)),
-  tar_target(hbw_mc_coeff_lists_600n, generate_mc_coeff(HBW, mc_coeff, mc_const, 600)),
+  tar_target(hbw_mc_coeff_lists_600, generate_mc_coeff(HBW, mc_coeff, mc_const, 600)),
   tar_target(hbo_mc_coeff_lists_600, generate_mc_coeff(HBO, mc_coeff, mc_const, 600)), 
   tar_target(nhb_mc_coeff_lists_600, generate_mc_coeff(NHB, mc_coeff, mc_const, 600)),
   
+  # DC coeff
+  tar_target(hbw_dc_coeff_lists_100, generate_dc_coeff(HBW, dc_coeff, 100)),
+  tar_target(hbo_dc_coeff_lists_100, generate_dc_coeff(HBO, dc_coeff, 100)), 
+  tar_target(nhb_dc_coeff_lists_100, generate_dc_coeff(NHB, dc_coeff, 100)),
+  
+  #write out CSVs
+  tar_target(write_mc_lists, mcparam_csv(hbw_mc_coeff_lists_100, hbo_mc_coeff_lists_100, nhb_mc_coeff_lists_100, mc_coeff)),
+  tar_target(write_dc_lists, dcparam_csv(hbw_dc_coeff_lists_100, hbo_dc_coeff_lists_100, nhb_dc_coeff_lists_100, dc_coeff)),
+  
   # run mode choice logsum calculator
-  tar_target(hbw_mc_logsummean_100, mc_logsum_loop(skims, hbw_mc_coeff_lists_100)),
-  tar_target(hbo_mc_logsummean_100, mc_logsum_loop(skims, hbo_mc_coeff_lists_100)),
-  tar_target(nhb_mc_logsummean_100, mc_logsum_loop(skims, nhb_mc_coeff_lists_100)),
-  tar_target(hbw_mc_logsummean_600, mc_logsum_loop(skims, hbw_mc_coeff_lists_600n)),
-  tar_target(hbo_mc_logsummean_600, mc_logsum_loop(skims, hbo_mc_coeff_lists_600)),
-  tar_target(nhb_mc_logsummean_600, mc_logsum_loop(skims, nhb_mc_coeff_lists_600)),
+ tar_target(hbw_mc_logsummean_100, mc_logsum_loop(skims, hbw_mc_coeff_lists_100)),
+ #tar_target(hbo_mc_logsummean_100, mc_logsum_loop(skims, hbo_mc_coeff_lists_100)),
+ #tar_target(nhb_mc_logsummean_100, mc_logsum_loop(skims, nhb_mc_coeff_lists_100)),
+ tar_target(hbw_mc_logsummean_600, mc_logsum_loop(skims, hbw_mc_coeff_lists_600)),
+ #tar_target(hbo_mc_logsummean_600, mc_logsum_loop(skims, hbo_mc_coeff_lists_600)),
+ #tar_target(nhb_mc_logsummean_600, mc_logsum_loop(skims, nhb_mc_coeff_lists_600)),
   
   # process stats
-  tar_target(hbw_stats_100, process_stats(hbw_mc_logsummean_100)),
-  tar_target(hbo_stats_100, process_stats(hbo_mc_logsummean_100)),
-  tar_target(nhb_stats_100, process_stats(nhb_mc_logsummean_100)),
-  tar_target(hbw_stats_600, process_stats(hbw_mc_logsummean_600)),
-  tar_target(hbo_stats_600, process_stats(hbo_mc_logsummean_600)),
-  tar_target(nhb_stats_600, process_stats(nhb_mc_logsummean_600)),
+ tar_target(hbw_stats_100, process_stats(hbw_mc_logsummean_100)),
+ #tar_target(hbo_stats_100, process_stats(hbo_mc_logsummean_100)),
+ #tar_target(nhb_stats_100, process_stats(nhb_mc_logsummean_100)),
+ tar_target(hbw_stats_600, process_stats(hbw_mc_logsummean_600)),
+ #tar_target(hbo_stats_600, process_stats(hbo_mc_logsummean_600)),
+ #tar_target(nhb_stats_600, process_stats(nhb_mc_logsummean_600)),
 
   # run destination choice calculator / compute destination choice
   # compute mode choice probability
