@@ -68,9 +68,6 @@ nhb_stats_600|stem|f55d1a1973ba3446|db6cccfa4a9de71c|611d943008ca3d25|-109786331
 dc_coeff_file|stem|725781ae8b9ee08e|0b9ea47fc840f373|ef46db3751d8e999|-1720594686|data/DESTCHOICE_PARAMETERS.DBF|t19116.0775447234s|f671a400543030db|1714|file|vector|||2.783||
 nhb_mc_logsummean_100|stem|e8db711c30d19efc|4ccc6f3c12f9ced8|d54f722116647d43|-725285063||t19101.642516731s||2056|rds|vector|||2.309||Problem with mutate column nonmo_utility.34mℹ39m nonmo_utility  k_nmot  20  coeff_walk1  nonmotor.34mℹ39m nonmo_utility must be size 625 or 1, not 0.
 dc_coeff|stem|93f66eb83f4868b6|2998cefd9ce57115|33c68ddb50ec6a1f|1394105057||t19128.9055335508s|e31411335ec9539f|533|rds|vector|||2.773||
-hbw_dc_coeff_lists_100|stem|19b316715f1b384a|48df4ee071656306|d304708a6700848d|-350695074||t19152.9522032807s|726e682652896a62|2818|rds|vector|||5.059||
-hbo_dc_coeff_lists_100|stem|b17a63fbf050a0a9|501be7a99bff0a92|042acbcf8563960d|1739425573||t19152.9522034746s|f7c4ee53ba835a0b|4494|rds|vector|||0.006||
-nhb_dc_coeff_lists_100|stem|2c279a011aadbe46|511f220b9b66ec13|427376f77a1ac63a|-111801443||t19152.9522037067s|fc7db2388bb0ccbe|4495|rds|vector|||0.01||
 write_dc_lists|stem|976058a9a405965f|1bfd72cf972827bf|f68d656339c566fd|-1554550664||t19158.3105248064s|a1c456b03adbfbf8|44|rds|vector|||4.605||
 hbo_mc_coeff_lists_100|stem|e146d6fc1fd6dec7|39e611a5ad74c01a|d1ba4cf02835b9ee|2071117481||t19158.3324399163s|3764bee4c186771f|8862|rds|vector|||2.972||
 hbw_mc_coeff_lists_100|stem|9b6ef0fc577c6fb6|88b51744792c2d00|9eda3a427d53ef37|1423772892||t19158.3324403557s|dea505c4907d4c20|8818|rds|vector|||0.02||
@@ -80,25 +77,61 @@ hbw_mc_coeff_lists_600|stem|d2450889608b1027|113b8bf3c1899ba9|9eda3a427d53ef37|-
 nhb_mc_coeff_lists_600|stem|0cd2d73a211c9c87|fb2ff43807939404|3dd9dea2a8485124|366590385||t19158.3324434746s|87efedfd2677db0b|52175|rds|vector|||0.046||
 write_mc_lists|stem|976058a9a405965f|cb918b76e5a90208|df61685c297ab0cd|1148505818||t19158.332462452s|a1c456b03adbfbf8|44|rds|vector|||1.602|UsersnatmaegrayDesktopparam100 already exists|
 hbo_mc_logsummean_600|stem|1111218c750d7b19|2c1d0e2f9a14c968|cfe5e59021ee3c66|-1029154226||t18970.2727905518s||11096|rds|vector|||2.81||Problem with mutate column nonmo_utility.34mℹ39m nonmo_utility  k_nmot  20  coeff_walk1  nonmotor.34mℹ39m nonmo_utility must be size 625 or 1, not 0.
+dcparam_csv|function|33cc1b889a85f6bc||||||||||||||
+mcparam_csv|function|ef506d42ea5e4f99||||||||||||||
+hbw_mc_logsummean_100|stem|7e417316d2a673ef|c2102763033e53e3|0be5c68dae1b970f|634755118||t19158.3408506186s|1907c516d7547367|2007|rds|vector|||5.354||
+hbw_mc_logsummean_600|stem|ba3708eb3cbb214d|e324c19dab0d525a|a2b9b58b3925f54d|-2046780420||t19158.3410423942s|9115dde379758e2e|10921|rds|vector|||16.544||
+hbw_stats_600|stem|92dffe3c48967dee|136da12cb267ed06|dba4f94bec899421|-1478145679||t19158.3410430317s|79880b0d734f1bcc|31468|rds|vector|||0.014||
+landuse_file|stem|0fc9a7f26c3c85f2|4f2246dd451888d0|ef46db3751d8e999|2002833057|data/land_use.csv|t18935.881744509s|15de572404ee18d4|5078|file|vector|||7.186|package readr was built under R version 4.1.2|
+land_use|stem|310e793a60d22f3e|7c767034d31313c7|1b8da7b809e8b425|697806607||t19282.2578035671s|e3b112af4363f5d1|3301|rds|vector|||0.385||
+hbw_dc_coeff_lists_100|stem|244087bcda5aa1b8|48df4ee071656306|1d66ebd37ddc7f5d|-350695074||t19282.2578050834s|acc33ea125d3140e|5423|rds|vector|||0.091||
+nhb_dc_coeff_lists_100|stem|245aac526d4a7112|511f220b9b66ec13|c99afc0a00c822b6|-111801443||t19282.2578054182s|0d34c0a52b7f980d|8816|rds|vector|||0.009||
+hbo_dc_coeff_lists_100|stem|e2d4350b1f6e1840|501be7a99bff0a92|6a5477a9a3f9fd8a|1739425573||t19282.2578058551s|e4d681a123bc5c56|8812|rds|vector|||0.011||
+hbw_dc_logsummean_100|stem||d7977574c58c82f1|82d9ed2e098ef30d|1019673642||t19282.2578073291s||0|rds|vector|||2.225|package readr was built under R version 4.1.2|argument land_use is missing, with no default
+total_trips|function|7f751aef04cd03cd||||||||||||||
+mc_logsum_loop|function|5fd7b1379678fb65||||||||||||||
+dc_logsum_loop|function|6be305bc6bf0c4ee||||||||||||||
+hbw_stats_100|stem|b99177953b378866|1c14ac16ce47a863|670816386d57e350|1094700144||t19158.3410427479s||5567|rds|vector|||0.06||Problem with mutate column cumvar.34mℹ39m cumvar  cumvarmeanlogsum.31mx39m object meanlogsum not found34mℹ39m The error occurred in group 1 type  base.
+hbw_mc_logsum_100|stem|7abd00a8e1ec6903|c2102763033e53e3|c45b5406c1a2fed3|1346923713||t19282.2662254402s||3908035|rds|vector|||7.46|package readr was built under R version 4.1.2|could not find function mc_logsum_loop
+hbw_full_loop_100|stem|ef4171f55dac1c7b|e2b551c565717ab8|af833c02a7fc3442|-1654034969||t19296.6903087201s|aa9fc21687d869d6|8949156|rds|vector|||21.805|package readr was built under R version 4.1.2|
+hbo_full_loop_100|stem|f49dc40a68c8ded9|78669fbbef270332|1b01a4508d3736d1|1671155273||t19296.6905196355s|246a2458d07cef3f|8918602|rds|vector|||17.506||
+nhb_full_loop_100|stem|4cba3f674c3257c6|434bed3e5b3f3f4b|51db70795ac2f9a7|359339717||t19296.6907295393s|d94387ab7d0daf78|8934567|rds|vector|||17.314||
+hbw_dclogsum_tibble|stem|c0e3405b98ea49d4|4aa68dbaa92ddb07|22185112093d9541|-1111712696||t19303.7870518024s|8af83e29791d9d85|38767|rds|vector|||2.216|package readr was built under R version 4.1.2|
+hbw_dcutility_tibble|stem|02c8233d9f3c36ff|a47b710daa385bad|22185112093d9541|1563079125||t19303.7870538446s|9caef5e42ee4527c|939381|rds|vector|||0.036||
+hbw_mclogsum_tibble|stem|9399ae7c752fcf4c|816594c58ae192bd|22185112093d9541|-1036224171||t19303.7870580922s|1262488c8532100a|3908031|rds|vector|||0.051||
+hbw_dcprobability_tibble|stem|198b209935d8e16c|135a38e01534b577|22185112093d9541|1155700825||t19303.7870612413s|1e8fcf9763d4b5b8|1926150|rds|vector|||0.058||
+hbw_mcprobability_tibble|stem|50304ea524254996|4ba9cc61a623b085|22185112093d9541|-117056727||t19303.7870651874s|9b4bf449267d805c|2759961|rds|vector|||0.055||
+nhb_mcprobability_tibble|stem|3eeb684eb871f658|8293a56e79c4f0bb|34f818a79824600b|-1959450017||t19303.867363645s|8a7d99911c627071|2752812|rds|vector|||2.961|package readr was built under R version 4.1.2|
+nhb_mclogsum_tibble|stem|7ea67511d56fc9b4|56dda198104f6323|34f818a79824600b|664566130||t19303.8673683267s|6be8a753f655eb1b|3902098|rds|vector|||0.044||
+nhb_dcprobability_tibble|stem|3f208fa9cf7d92fb|6f5bb9b454385d9d|34f818a79824600b|2036151703||t19303.8673713446s|cd96b88d500384c1|1924697|rds|vector|||0.048||
+nhb_dcutility_tibble|stem|127835c8fb11c57f|8a6b1f6b6cf3606f|34f818a79824600b|-236440456||t19303.8673735782s|439b3d6501a9edb7|935480|rds|vector|||0.039||
+nhb_dclogsum_tibble|stem|4e53b458a5571b58|3b4e71d60f26b3d3|34f818a79824600b|1169350392||t19303.8673739098s|01401766a51ef28b|38585|rds|vector|||0.017||
+hbo_mclogsum_tibble|stem|67628412d7b70444|5c1a25812c0c7f5a|6d1a3529d349c5ab|-1566260454||t19303.8673813164s|8f0884988d0f7e53|3894360|rds|vector|||0.163||
+hbo_dcutility_tibble|stem|a329594839da7a60|3044c2f06293c6c4|6d1a3529d349c5ab|-2134982539||t19303.8673836127s|4f568698d707183f|933763|rds|vector|||0.036||
+hbo_dcprobability_tibble|stem|64549ad9a862f399|e157bd8c7f8baf5a|6d1a3529d349c5ab|55038707||t19303.8673866053s|18a8a2e6f33442cc|1920370|rds|vector|||0.049||
+hbo_mcprobability_tibble|stem|0262e2de6c4cfa0e|94f2ac01050c5f97|6d1a3529d349c5ab|1839426260||t19303.8673921552s|3d2e426c2e37429b|2748518|rds|vector|||0.172||
+hbo_dclogsum_tibble|stem|afd1ef2a1d946810|b0a5c2cca516c5f8|6d1a3529d349c5ab|-909423399||t19303.8673925124s|6104a81dac344a5c|38441|rds|vector|||0.017||
+hbw_plots|stem|bd612cc4c04eaca4|9efd0dfedabe5da3|eab1fa7d8d3c90ff|-2124300247||t19303.8674119847s|5799199ab1830cab|13637983|rds|vector|||0.127||
 mc_logsum|function|c76690860b749e8a||||||||||||||
+dc_utility|function|d20e5fcb7fc98ef7||||||||||||||
+mc_probability|function|a9a4079f1607278a||||||||||||||
 nhts_2017|function|9c564469e6ee8263||||||||||||||
 tripprod|function|7292af14551cd3a7||||||||||||||
 generate_mc_coeff|function|5c614ec6148fb8ba||||||||||||||
+pull_tibbles|function|eaecc118528b41e9||||||||||||||
 readCSV|function|f7b4b4dd1d0ccaec||||||||||||||
 mapplot|function|4e39614f2c17df8f||||||||||||||
-mc_probability|function|22950cee12b3755e||||||||||||||
+cumvar|function|d0bd0281098a6288||||||||||||||
 readskims|function|998557da6f8060d2||||||||||||||
 tazmap|function|38843e359a024cf3||||||||||||||
-dcparam_csv|function|33cc1b889a85f6bc||||||||||||||
-cumvar|function|d0bd0281098a6288||||||||||||||
 hh_data|function|e0930a5316f46289||||||||||||||
-generate_dc_coeff|function|a5d6de63065b7c70||||||||||||||
+generate_dc_coeff|function|7468acc87b18c3e3||||||||||||||
 book_targets|object|78c413f6272492ae||||||||||||||
-mcparam_csv|function|ef506d42ea5e4f99||||||||||||||
-data_targets|object|969204e2ae01737a||||||||||||||
-mc_logsum_loop|function|05ffe7162aab1dfe||||||||||||||
+data_targets|object|7c1d7a33aa998505||||||||||||||
+dc_logsum|function|eb8994c56a41c1c8||||||||||||||
 process_stats|function|b0baf4fc089e522a||||||||||||||
-hbw_mc_logsummean_100|stem|7e417316d2a673ef|c2102763033e53e3|0be5c68dae1b970f|634755118||t19158.3408506186s|1907c516d7547367|2007|rds|vector|||5.354||
-hbw_mc_logsummean_600|stem|ba3708eb3cbb214d|e324c19dab0d525a|a2b9b58b3925f54d|-2046780420||t19158.3410423942s|9115dde379758e2e|10921|rds|vector|||16.544||
-hbw_stats_100|stem|b99177953b378866|b6d69611c105147d|fb92cd77731249fd|1094700144||t19158.3410427479s|4c5119ed95e921ee|5567|rds|vector|||0.022||
-hbw_stats_600|stem|92dffe3c48967dee|136da12cb267ed06|dba4f94bec899421|-1478145679||t19158.3410430317s|79880b0d734f1bcc|31468|rds|vector|||0.014||
+dc_probability|function|5387e33bf3b744b4||||||||||||||
+tibbleplots|function|89d135cd5949e3c8||||||||||||||
+full_loop|function|159111c0bdc6f667||||||||||||||
+nhb_plots|stem|9ed813d99b1666a5|5210d26a70754a56|cafb563d998435fa|-981978373||t19303.8696348019s|7ce24c57c1645001|13609379|rds|vector|||2.627|package readr was built under R version 4.1.2|
+hbo_plots|stem|e0f794bab9f5fd1a|fc06331da87313dd|2c0fc31c2b796deb|-1260869469||t19303.8696552052s|562ee8fdc7833076|13582748|rds|vector|||0.039||

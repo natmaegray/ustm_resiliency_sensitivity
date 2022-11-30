@@ -6,7 +6,10 @@ The parameters generated were compared for both sampling methods. Figure \@ref(f
 tar_load(hbw_mc_coeff_lists_100)
 list100 <- hbw_mc_coeff_lists_100
 
-Z <- bind_rows(list100) %>% mutate(method = c("base", rep("MC", 100), rep("LHS", 100))) %>% pivot_longer(cols = ivtt:walk2)
+Z <- bind_rows(list100) %>% 
+  mutate(method = c("base", rep("MC", 100), rep("LHS", 100))) %>% 
+  mutate(vot = (ivtt/ccost) * (60/100)) %>%
+  pivot_longer(cols = -c("method"))
 
 Z %>%
   filter(!(method %in% "base")) %>%
@@ -25,7 +28,10 @@ Z %>%
 tar_load(hbw_mc_coeff_lists_600)
 list600 <- hbw_mc_coeff_lists_600
 
-Z <- bind_rows(list600) %>% mutate(method = c("base", rep("MC", 600), rep("LHS", 600))) %>% pivot_longer(cols = ivtt:walk2)
+Z <- bind_rows(list600) %>% 
+  mutate(method = c("base", rep("MC", 600), rep("LHS", 600))) %>%
+  mutate(vot = (ivtt/ccost) * (60/100)) %>%
+  pivot_longer(cols = -c("method"))
 
 Z %>%
   filter(!(method %in% "base")) %>%

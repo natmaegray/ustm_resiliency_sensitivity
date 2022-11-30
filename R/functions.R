@@ -3,17 +3,18 @@
 # 
 # 
 
-#read skims
+#read CSVs
+readCSV <- function(path){
+  read_csv(path)
+}
+
+#read skims -> gives travel times
 readskims <- function(path){
   read_all_omx(path, names = c("DIST","SOV_TIME__AM", "DISTWALK", "WLK_LOC_WLK_TOTIVT__AM")) %>%
     mutate(auto = SOV_TIME__AM, nonmotor = DISTWALK*(5280*1/60*0.25) , transit = WLK_LOC_WLK_TOTIVT__AM/100 ) %>%
     select(c("origin", "destination","DIST", "auto", "nonmotor", "transit"))
 }
 
-#read CSVs
-readCSV <- function(path){
-  read_csv(path)
-}
 
 #organize hh data
 hh_data <- function(households){
@@ -142,6 +143,14 @@ generate_dc_coeff <- function(purpose, dc_coeff, ndraws){
                             "off_emp" = off_emp, 
                             "oth_emp" = oth_emp, 
                             "ret_emp" = ret_emp)
+  ##random DC coeffs
+  rand_coeffs <-lapply(1:ndraws, function(i){
+    list("coeff_hh" = rnorm(1, coeff_hh,  abs(0.10*coeff_hh)), 
+         "oth_off"  = rnorm(1, oth_off,   abs(0.10*oth_off)), 
+         "off_emp"  = rnorm(1, off_emp,   abs(0.10*off_emp)), 
+         "oth_emp"  = rnorm(1, oth_emp,   abs(0.10*oth_emp)), 
+         "ret_emp"  = rnorm(1, ret_emp,   abs(0.10*ret_emp)))
+  })
   
   #lhs
   X <- randomLHS(ndraws, 5) 
@@ -161,84 +170,87 @@ generate_dc_coeff <- function(purpose, dc_coeff, ndraws){
   
   dc_coeff_list <- list()
   dc_coeff_list[[1]] <- orig_coeffs
-  dc_coeff_list[[2]] <- lhs_coeffs
+  dc_coeff_list[[2]] <- rand_coeffs
+  dc_coeff_list[[3]] <- lhs_coeffs
   
   return(dc_coeff_list)
 }
 
+# WRITE TO CSV - not using anymore
+{
 
-
-mcparam_csv <- function(hbw, hbo, nhb, mccoeff){
-  hbw_df <- bind_rows(hbw)
-  hbo_df <- bind_rows(hbo)
-  nhb_df <- bind_rows(nhb)
-  
-  for(i in 1:100){
-  
-    folder <- "~/Desktop/param"
-    iter <- i
-    dir.create(file.path(folder, iter))
-    
-  mc_coeff_lhs <- mccoeff %>%
-    mutate(HBW = replace(HBW, Name == "CIVTT",    hbw_df[[i+101,1]]),
-           HBW = replace(HBW, Name == "CCOST",    hbw_df[[i+101,2]]),
-           HBW = replace(HBW, Name == "CWALK1",   hbw_df[[i+101,4]]),
-           HBW = replace(HBW, Name == "CWALK2",   hbw_df[[i+101,5]]),
-           HBW = replace(HBW, Name == "AUTOCOST", hbw_df[[i+101,3]]),
-           HBO = replace(HBO, Name == "CIVTT",    hbo_df[[i+101,1]]),
-           HBO = replace(HBO, Name == "CCOST",    hbo_df[[i+101,2]]),
-           HBO = replace(HBO, Name == "CWALK1",   hbo_df[[i+101,4]]),
-           HBO = replace(HBO, Name == "CWALK2",   hbo_df[[i+101,5]]), 
-           HBO = replace(HBO, Name == "AUTOCOST", hbo_df[[i+101,3]]),
-           NHB = replace(NHB, Name == "CIVTT",    nhb_df[[i+101,1]]),
-           NHB = replace(NHB, Name == "CCOST",    nhb_df[[i+101,2]]),
-           NHB = replace(NHB, Name == "CWALK1",   nhb_df[[i+101,4]]),
-           NHB = replace(NHB, Name == "CWALK2",   nhb_df[[i+101,5]]),
-           NHB = replace(NHB, Name == "AUTOCOST", nhb_df[[i+101,3]]))
-  
-  write_csv(mc_coeff_lhs , file = file.path(folder, iter, "MC_Coefficients.csv"), quote="none")
-  
-  2+3
-  }  
-  
-}
-
-dcparam_csv <- function(hbw, hbo, nhb, dccoeff){
-  hbw_df <- bind_rows(hbw)
-  hbo_df <- bind_rows(hbo)
-  nhb_df <- bind_rows(nhb)
-  
-  for(i in 1:100){
-    
-    folder <- "~/Desktop/param"
-    iter <- i
-    
-    dc_coeff_lhs <- dccoeff %>%
-      slice(1:(n()-1)) %>%
-      mutate(HBW = replace(HBW, VAR == "HH",      hbw_df[[i+1,1]]),
-             HBW = replace(HBW, VAR == "I(OTH_EMP + OFF_EMP)", hbw_df[[i+1,2]]),
-             HBW = replace(HBW, VAR == "OFF_EMP", hbw_df[[i+1,3]]),
-             HBW = replace(HBW, VAR == "OTH_EMP", hbw_df[[i+1,4]]),
-             HBW = replace(HBW, VAR == "RET_EMP", hbw_df[[i+1,5]]),
-             
-             HBO = replace(HBO, VAR == "HH",      hbo_df[[i+1,1]]),
-             HBO = replace(HBO, VAR == "I(OTH_EMP + OFF_EMP)", hbo_df[[i+1,2]]),
-             HBO = replace(HBO, VAR == "OFF_EMP", hbo_df[[i+1,3]]),
-             HBO = replace(HBO, VAR == "OTH_EMP", hbo_df[[i+1,4]]),
-             HBO = replace(HBO, VAR == "RET_EMP", hbo_df[[i+1,5]]),
-             
-             NHB = replace(NHB, VAR == "HH",      nhb_df[[i+1,1]]),
-             NHB = replace(NHB, VAR == "I(OTH_EMP + OFF_EMP)", nhb_df[[i+1,2]]),
-             NHB = replace(NHB, VAR == "OFF_EMP", nhb_df[[i+1,3]]),
-             NHB = replace(NHB, VAR == "OTH_EMP", nhb_df[[i+1,4]]),
-             NHB = replace(NHB, VAR == "RET_EMP", nhb_df[[i+1,5]])
-              )
-    
-    write_csv(dc_coeff_lhs , file = file.path(folder, iter, "DC_PARAM.csv"), quote="none")
-    
-  }  
-  
-}
+#mcparam_csv <- function(hbw, hbo, nhb, mccoeff){
+#  hbw_df <- bind_rows(hbw)
+#  hbo_df <- bind_rows(hbo)
+#  nhb_df <- bind_rows(nhb)
+#  
+#  for(i in 1:100){
+#  
+#    folder <- "~/Desktop/param"
+#    iter <- i
+#    dir.create(file.path(folder, iter))
+#    
+#  mc_coeff_lhs <- mccoeff %>%
+#    mutate(HBW = replace(HBW, Name == "CIVTT",    hbw_df[[i+101,1]]),
+#           HBW = replace(HBW, Name == "CCOST",    hbw_df[[i+101,2]]),
+#           HBW = replace(HBW, Name == "CWALK1",   hbw_df[[i+101,4]]),
+#           HBW = replace(HBW, Name == "CWALK2",   hbw_df[[i+101,5]]),
+#           HBW = replace(HBW, Name == "AUTOCOST", hbw_df[[i+101,3]]),
+#           HBO = replace(HBO, Name == "CIVTT",    hbo_df[[i+101,1]]),
+#           HBO = replace(HBO, Name == "CCOST",    hbo_df[[i+101,2]]),
+#           HBO = replace(HBO, Name == "CWALK1",   hbo_df[[i+101,4]]),
+#           HBO = replace(HBO, Name == "CWALK2",   hbo_df[[i+101,5]]), 
+#           HBO = replace(HBO, Name == "AUTOCOST", hbo_df[[i+101,3]]),
+#           NHB = replace(NHB, Name == "CIVTT",    nhb_df[[i+101,1]]),
+#           NHB = replace(NHB, Name == "CCOST",    nhb_df[[i+101,2]]),
+#           NHB = replace(NHB, Name == "CWALK1",   nhb_df[[i+101,4]]),
+#           NHB = replace(NHB, Name == "CWALK2",   nhb_df[[i+101,5]]),
+#           NHB = replace(NHB, Name == "AUTOCOST", nhb_df[[i+101,3]]))
+#  
+#  write_csv(mc_coeff_lhs , file = file.path(folder, iter, "MC_Coefficients.csv"), quote="none")
+#  
+#  2+3
+#  }  
+#  
+#}
+#
+#dcparam_csv <- function(hbw, hbo, nhb, dccoeff){
+#  hbw_df <- bind_rows(hbw)
+#  hbo_df <- bind_rows(hbo)
+#  nhb_df <- bind_rows(nhb)
+#  
+#  for(i in 1:100){
+#    
+#    folder <- "~/Desktop/param"
+#    iter <- i
+#    
+#    dc_coeff_lhs <- dccoeff %>%
+#      slice(1:(n()-1)) %>%
+#      mutate(HBW = replace(HBW, VAR == "HH",      hbw_df[[i+1,1]]),
+#             HBW = replace(HBW, VAR == "I(OTH_EMP + OFF_EMP)", hbw_df[[i+1,2]]),
+#             HBW = replace(HBW, VAR == "OFF_EMP", hbw_df[[i+1,3]]),
+#             HBW = replace(HBW, VAR == "OTH_EMP", hbw_df[[i+1,4]]),
+#             HBW = replace(HBW, VAR == "RET_EMP", hbw_df[[i+1,5]]),
+#             
+#             HBO = replace(HBO, VAR == "HH",      hbo_df[[i+1,1]]),
+#             HBO = replace(HBO, VAR == "I(OTH_EMP + OFF_EMP)", hbo_df[[i+1,2]]),
+#             HBO = replace(HBO, VAR == "OFF_EMP", hbo_df[[i+1,3]]),
+#             HBO = replace(HBO, VAR == "OTH_EMP", hbo_df[[i+1,4]]),
+#             HBO = replace(HBO, VAR == "RET_EMP", hbo_df[[i+1,5]]),
+#             
+#             NHB = replace(NHB, VAR == "HH",      nhb_df[[i+1,1]]),
+#             NHB = replace(NHB, VAR == "I(OTH_EMP + OFF_EMP)", nhb_df[[i+1,2]]),
+#             NHB = replace(NHB, VAR == "OFF_EMP", nhb_df[[i+1,3]]),
+#             NHB = replace(NHB, VAR == "OTH_EMP", nhb_df[[i+1,4]]),
+#             NHB = replace(NHB, VAR == "RET_EMP", nhb_df[[i+1,5]])
+#              )
+#    
+#    write_csv(dc_coeff_lhs , file = file.path(folder, iter, "DC_PARAM.csv"), quote="none")
+#    
+#  }  
+#  
+#}
+}  
 
 # run mode choice logsum calculator
 #' @param mc_coeff A named list of parameter values
@@ -275,30 +287,156 @@ mc_logsum <- function(skims, coeff_list){
     select(c("origin", "destination", "ex_drive_util", "ex_nonmo_util", "ex_trans_util", "denom_util", "logsum" ))
 }
 
-# loop mc logsums
-mc_logsum_loop <- function(skims, coeff_full){
-  baselogsums <- mc_logsum(skims, coeff_full[[1]][[1]]) 
-    basemeanlogsum <- tibble(draw = "1",
-                              meanlogsum = mean(baselogsums$logsum),
-                              type = "base")
-    
-  montecarlologsums <- lapply(coeff_full[[2]], function(coeffs){
-    moncar_mc_logsum <- mc_logsum(skims, coeffs)
-    mc_mean <- tibble(meanlogsum = mean(moncar_mc_logsum$logsum),
-                      type = "MC")
-  }) %>%
-    bind_rows(.id = "draw") 
+
+# run destination choice calculator / compute destination choice
+dc_utility <- function(mc_logsum, dc_coeffs, land_use, skims){
   
-  latinhyperlogsums <- lapply(coeff_full[[3]], function(coeffs){
-    lhs_mc_logsum <- mc_logsum(skims, coeffs)
-    lhs_mean <- tibble(meanlogsum = mean(lhs_mc_logsum$logsum), 
-                       type = "LHS")
-  }) %>%
-    bind_rows(.id = "draw")
+  coeff_hh   <- dc_coeffs$coeff_hh 
+  c_off_emp  <- dc_coeffs$off_emp
+  c_oth_emp  <- dc_coeffs$oth_emp
+  c_ret_emp  <- dc_coeffs$ret_emp
+  c_lsum     <- 1
   
-  bind_rows(basemeanlogsum, montecarlologsums, latinhyperlogsums) %>%
+  tothh   <- land_use$TOTHH
+  offiemp <- land_use$OTHEMPN - land_use$RETEMPN - land_use$AGREMPN - land_use$MWTEMPN
+  retemp  <- land_use$RETEMPN
+  allemp  <- land_use$TOTEMP
+  
+  sizeterm <- tibble(destination = 1:nrow(land_use),
+                     sizeterm = coeff_hh*tothh  + c_off_emp*offiemp + c_ret_emp*retemp + c_oth_emp*(allemp - offiemp - retemp)) %>%
+    mutate(log_sizeterm = ifelse(sizeterm > 0, log(sizeterm), 0))
+  
+  dc_utils <- mc_logsum %>%
+    mutate(primary_impedance = c_lsum*logsum) %>%
+    left_join(sizeterm, by = "destination") %>%
+    mutate(dc_utility = primary_impedance + log_sizeterm) %>%
+    select("origin", "destination", "dc_utility")
+
+  dc_utils
+  
+}
+
+dc_logsum <- function(dc_utils){
+  dc_utils %>%
+    group_by(origin) %>%
+    summarise(dc_logsum = sum(exp(dc_utility)))
+  
+}
+
+# compute mode choice probability
+mc_probability <- function(mc_logsum){
+  mc_logsum %>%
+    mutate(drive_prob = ex_drive_util / denom_util,
+           nonmo_prob = ex_nonmo_util / denom_util, 
+           trans_prob = ex_trans_util / denom_util 
+    ) %>%
+    select(c("origin", "destination", "drive_prob", "nonmo_prob", "trans_prob"))
+}
+
+dc_probability <- function(dc_utils, dcls){
+  dc_utils %>%
+    left_join(dcls, by = "origin") %>%
+    mutate(probability = exp(dc_utility) / dc_logsum)
+}
+
+#total_trips <- function(productions, dc_probability, mc_probability){
+  # trips <- productions*probability*
+#}
+
+
+full_loop <- function(skims, mc_coeff_list_full, dc_coeffs_full, land_use, ndraws){
+  
+  functions <- function(mc_coeff, dc_coeffs){
+    mc_logsum <- mc_logsum(skims, mc_coeff)
+    dc_utils <- dc_utility(mc_logsum, dc_coeffs, land_use, skims)
+    dc_logsum <- dc_logsum(dc_utils)
+    mc_prob <- mc_probability(mc_logsum)
+    dc_prob <- dc_probability(dc_utils, dc_logsum)
+  
+    iteration_list <- list(ModeChoice_Logsum = mc_logsum,
+                         Destination_Utility = dc_utils,
+                         Destination_Logsum = dc_logsum,
+                         ModeChoice_Probability = mc_prob,
+                         Destination_Probability = dc_prob)
+  }
+  
+  baseiteration <- functions(mc_coeff_list_full[[1]][[1]], dc_coeffs_full[[1]][[1]])
+  
+  montecarloiterations <- list()
+  for (i in 1:ndraws){
+    new_element <- functions(mc_coeff_list_full[[2]][[i]], dc_coeffs_full[[2]][[i]])
+    montecarloiterations[[length(montecarloiterations) + 1]] <- new_element} 
+  
+  latinhyperiterations <- list()
+  for (i in 1:ndraws){
+    new_element <- functions(mc_coeff_list_full[[3]][[i]], dc_coeffs_full[[3]][[i]])
+    latinhyperiterations[[length(latinhyperiterations) + 1]] <- new_element}
+  
+  full_results <- list(BaseIteration = baseiteration,
+       MonteCarloIterations = montecarloiterations,
+       LatinHyperIterations = latinhyperiterations)
+  
+  full_results
+}
+
+pull_tibbles <- function(full_list, data_table){
+  
+  base <- full_list[["BaseIteration"]][[data_table]] %>% mutate(type = "base")
+  
+  montecarlo <- lapply(full_list[["MonteCarloIterations"]], function(x) x[[data_table]]) %>%
+    bind_rows(.id = "draw") %>% mutate(type = "MC")
+  
+  latinhyper <- lapply(full_list[["LatinHyperIterations"]], function(x) x[[data_table]]) %>%
+    bind_rows(.id = "draw") %>% mutate(type = "LHS")
+  
+  bind_rows(base, montecarlo, latinhyper) %>%
     mutate(draw = as.numeric(draw))
 }
+
+
+
+tibbleplots <- function(mclogsum_tibble, dcutility_tibble, dclogsum_tibble, mcprobability_tibble, dcprobability_tibble){
+  
+  mclogsum_tibble_chart <- mclogsum_tibble %>%
+                          group_by(type, draw) %>%
+                          summarise(mean = mean(logsum)) %>%
+                          mutate(cumvar = cumvar(mean),
+                                 cummean = cummean(mean)) %>%
+               filter(type != "base") %>%
+               ggplot() +
+               aes(x = draw, y = cummean, ymin = cummean - 1.96*cumvar, ymax = cummean + 1.96*cumvar, colour = type, fill = type, group = type) +
+               geom_ribbon(alpha = 0.2, colour = NA) +
+               geom_line(size = 0.5) +
+               #    ylim(0.025, 0.15) +
+               labs(x = "Draw", 
+                    y = "Cumulative Standard Deviation",
+                    color = "method") +
+               scale_color_hue(direction = 1) +
+               theme_bw() +
+               theme(legend.position = "bottom")
+  
+  dclogsum_chart <- dclogsum_tibble %>%
+                   group_by(type, draw) %>%
+                   summarise(mean = mean(dc_logsum)) %>%
+    ggplot() +
+    aes(x = "", y = mean, colour = type, group = type) +
+    labs(x = "", 
+         y = "Mean Destination Choice Logsum",
+         color = "Method") +
+    geom_boxplot(shape = "circle", fill = "#112446") +
+    scale_color_hue(direction = 1) +
+    theme_bw() +
+    theme(legend.position = "bottom")
+  
+  
+  
+  myplots <- list(MCLS_variation = mclogsum_tibble_chart,
+                  DCLS_mean = dclogsum_chart)
+  myplots
+  
+}
+
+
 
 cumvar <- function (x, sd = TRUE) {
   x <- x - x[sample.int(length(x), 1)]  ## see Remark 2 below
@@ -315,20 +453,6 @@ process_stats <- function(meanlogsums){
     mutate(cumvar = cumvar(meanlogsum)) %>%
     mutate(cummean = cummean(meanlogsum))
   
-}
-
-
-# run destination choice calculator / compute destination choice
-  #employment to trip attraction
-
-# compute mode choice probability
-mc_probability <- function(mode_skims){
-  mode_skims %>%
-    mutate(drive_prob = ex_drive_util / denom_util,
-           nonmo_prob = ex_nonmo_util / denom_util, 
-           trans_prob = ex_trans_util / denom_util 
-      ) %>%
-    select(c("origin", "destination", "drive_prob", "nonmo_prob", "trans_prob"))
 }
 
 tazmap <- function(path){
